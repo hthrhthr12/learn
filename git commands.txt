@@ -1,1 +1,3 @@
 git checkout -b dev
+cd learn
+git add *
