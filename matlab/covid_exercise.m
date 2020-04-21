@@ -11,22 +11,11 @@ save_histogram_cases(cases_number,5,1e2);
 % create histogram with bins_width=25, for cases_number<=1e3
 save_histogram_cases(cases_number,25,1e3);
 
-%% 1f-1g)
+%% 1f-1h)
 % cumulative sum cases Israel vs Britain(UK: United Kingdom)
-% where jump equal to 10 days.
-clc
-countries={'Israel','United_Kingdom'};
-% where_country contains a logical array for the countries indices in
-% covid_table
-where_country=ismember(covid_table.countriesAndTerritories,countries);
-% date and cases of Israel and UK
-dates_cases_country=covid_table(where_country,[1,5,11]);
-group_country=findgroups(dates_cases_country.countriesAndTerritories);
-ax=splitapply(@cumsum_country,dates_cases_country,...
-    group_country,group_country);
-linkaxes(ax,'x');
-saveas(gcf,'figures/cumsum_of_cases.png')
-close all
+% where jump equal to 10/1 days.
+arrayfun(@(jump)cumsum_Israel_UK(jump,covid_table),[1,10])
+
 %% ECDF
 % ECDF: empirical cumulative distribution function
 %compute histogram based on ecdf
@@ -37,7 +26,7 @@ title('ECDF of cases')
 saveas(gcf,'figures/ECDF_of_cases.png')
 close all
 
-%% 1h-1i)
+%% 1i-1j)
 %Boxplot represents the validity of results. It displays the spread of 
 % data around its median.
 % Boxplot num cases for country for day
@@ -45,7 +34,7 @@ boxplot(covid_table.cases)
 title('spread of num of cases per country per day')
 saveas(gcf,'figures/boxplot_num_cases.png')
 
-%% 1j)
+%% 1k)
 % extract the columns: cases, deaths
 dates_cases_country=covid_table(:,[5,6]);
 [group_country,countries]=findgroups(covid_table.countriesAndTerritories);

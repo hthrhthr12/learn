@@ -15,7 +15,6 @@ plot(dates(1:days_jump:end),...
 %flip the array for sorting it in ascending order
 xticks(flipud(dates(1:days_jump:end)))
 country_name=strrep(country{1},'_',' ');
-title(['cumsum: ',country_name,', where the jump=',...
-    num2str(days_jump),' days, total: ',num2str(cumsum_cases_country(1))])
+title(['cumsum of cases for ',country_name,', where , total: ',num2str(cumsum_cases_country(1))])
 grid on
 end
