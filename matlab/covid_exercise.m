@@ -2,7 +2,7 @@ clc
 clear variables
 covid_table = readtable("COVID-19-geographic-disbtribution-worldwide.xlsx");
 
-%% 1c-1g)
+%% 1c-1e)
 cases_number=covid_table.cases;
 % create histogram with bins_width=100, for cases_number<=1e3
 save_histogram_cases(cases_number,100,1e3);
@@ -11,37 +11,52 @@ save_histogram_cases(cases_number,5,1e2);
 % create histogram with bins_width=25, for cases_number<=1e3
 save_histogram_cases(cases_number,25,1e3);
 
-% ECDF: empirical cumulative distribution function
-% ECDF cases Israel vs Britain(UK: United Kingdom)
+%% 1f-1g)
+% cumulative sum cases Israel vs Britain(UK: United Kingdom)
 % where jump equal to 10 days.
-
+clc
 countries={'Israel','United_Kingdom'};
-days_jump=10;
-for country_index=1:length(countries)
-    % where_country contains a logical array for the country indices in
-    % covid_table
-    where_country=strcmp...
-        (covid_table.countriesAndTerritories,countries{country_index});
-    % create ceil of date and cases in country
-    date_cases_country=covid_table(where_country,[1,5]);
-    ECDF_cases_country=cumsum(date_cases_country.cases,'reverse');
-    subplot(2,1,country_index)
-    plot(date_cases_country.dateRep(1:days_jump:end),...
-        ECDF_cases_country(1:days_jump:end),...
-        '--o','DatetimeTickFormat','dd-M-yy')
-    country_name=strrep(countries{country_index},'_',' ');
-    title(['ECDF of num cases for ',country_name,', total: ',num2str(ECDF_cases_country(1))])
-    disp(['total number of cases in ',country_name, ' is :',...
-        num2str(ECDF_cases_country(1))])
-end
+% where_country contains a logical array for the countries indices in
+% covid_table
+where_country=ismember(covid_table.countriesAndTerritories,countries);
+% date and cases of Israel and UK
+dates_cases_country=covid_table(where_country,[1,5,11]);
+group_country=findgroups(dates_cases_country.countriesAndTerritories);
+ax=splitapply(@cumsum_country,dates_cases_country,...
+    group_country,group_country);
+linkaxes(ax,'x');
+saveas(gcf,'figures/cumsum_of_cases.png')
+close all
+%% ECDF
+% ECDF: empirical cumulative distribution function
+%compute histogram based on ecdf
+[ecdf_values,x]=ecdf(covid_table.cases);
+plot(x,ecdf_values)
+xlabel('cases')
+title('ECDF of cases')
 saveas(gcf,'figures/ECDF_of_cases.png')
 close all
 
 %% 1h-1i)
 %Boxplot represents the validity of results. It displays the spread of 
-% data around its mean.
+% data around its median.
 % Boxplot num cases for country for day
 boxplot(covid_table.cases)
 title('spread of num of cases per country per day')
 saveas(gcf,'figures/boxplot_num_cases.png')
 
+%% 1j)
+% extract the columns: cases, deaths
+dates_cases_country=covid_table(:,[5,6]);
+[group_country,countries]=findgroups(covid_table.countriesAndTerritories);
+% apply mean_cases_mean_deaths function to each country:
+means_differences=splitapply(@mean_cases_mean_deaths,dates_cases_country.cases,dates_cases_country.deaths,group_country);
+% means_differences is a cell, where in each cell we have array of mean
+% differences.
+countries_indices=cellfun(@cell_length,means_differences,num2cell((1:length(countries)).'));
+boxplot(cell2mat(means_differences),cell2mat(countries_indices));
+xlabel('countries')
+ylabel('mean(Cases) - mean(deaths)')
+title('countries are columns, measurement: 10 days')
+saveas(gcf,'figures/boxplot_per_country.png')
+close all
