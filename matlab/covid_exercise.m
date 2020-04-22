@@ -34,12 +34,12 @@ boxplot(covid_table.cases)
 title('spread of num of cases per country per day')
 saveas(gcf,'figures/boxplot_num_cases.png')
 
-%% 1k)
+%% 1k) first part
 % extract the columns: cases, deaths
-dates_cases_country=covid_table(:,[5,6]);
+cases_deaths=covid_table(:,[5,6]);
 [group_country,countries]=findgroups(covid_table.countriesAndTerritories);
 % apply mean_cases_mean_deaths function to each country:
-means_differences=splitapply(@mean_cases_mean_deaths,dates_cases_country.cases,dates_cases_country.deaths,group_country);
+means_differences=splitapply(@mean_cases_mean_deaths,cases_deaths.cases,cases_deaths.deaths,group_country);
 % means_differences is a cell, where in each cell we have array of mean
 % differences.
 countries_indices=cellfun(@cell_length,means_differences,num2cell((1:length(countries)).'));
@@ -49,3 +49,26 @@ ylabel('mean(Cases) - mean(deaths)')
 title('countries are columns, measurement: 10 days')
 saveas(gcf,'figures/boxplot_per_country.png')
 close all
+
+%% 1k) second part
+date_num=datenum(covid_table.dateRep);
+%split data to groups of 10 days each:
+[group_10_days,days]=findgroups...
+    (arrayfun(@(x)floor(x/10),date_num-min(date_num)));
+
+% apply mean_cases_mean_deaths function to each 10 days:
+means_differences=splitapply(@mean_cases_mean_deaths_divide_by_country,...
+    cases_deaths,group_country,group_10_days);
+% means_differences is a cell, where in each cell we have array of mean
+% differences.
+ten_days_indices=cell2mat(cellfun(@cell_length,means_differences,num2cell(days)));
+boxplot(cell2mat(means_differences),ten_days_indices);
+xlabel('10 days groups')
+ylabel('mean(Cases) - mean(deaths)')
+title('10 days groups are columns, measurements: countries')
+x_ticks_dates=datestr(datetime(10*unique(ten_days_indices)+...
+    min(date_num),'ConvertFrom','datenum'),'dd-mm');
+xticklabels(x_ticks_dates)
+saveas(gcf,'figures/boxplot_per_10_days.png')
+close all
+

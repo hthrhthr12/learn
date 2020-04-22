@@ -11,31 +11,22 @@ save_histogram_cases(cases_number,5,1e2);
 % create histogram with bins_width=25, for cases_number<=1e3
 save_histogram_cases(cases_number,25,1e3);
 
-%% 1f-1g)
-% ECDF: empirical cumulative distribution function
-% ECDF cases Israel vs Britain(UK: United Kingdom)
-% where jump equal to 10 days.
-clc
-countries={'Israel','United_Kingdom'};
-% where_country contains a logical array for the countries indices in
-% covid_table
-where_country=ismember(covid_table.countriesAndTerritories,countries);
-% date and cases of Israel and UK
-cases_deaths=covid_table(where_country,[1,5,11]);
-group_country=findgroups(cases_deaths.countriesAndTerritories);
-ax=splitapply(@ECDF_country,table2struct(cases_deaths),...
-    group_country,group_country);
-linkaxes(ax);
-saveas(gcf,'figures/ECDF_of_cases.png')
-close all
+%% 1f-1h)
+% cumulative sum cases Israel vs Britain(UK: United Kingdom)
+% where jump equal to 10/1 days.
+arrayfun(@(jump)cumsum_Israel_UK(jump,covid_table),[1,10])
+
 %% ECDF
+% ECDF: empirical cumulative distribution function
 %compute histogram based on ecdf
 [ecdf_values,x]=ecdf(covid_table.cases);
-ecdfhist(ecdf_values,x)
-saveas(gcf,'figures/histogram_based_on_ECDF_of_cases.png')
+plot(x,ecdf_values)
+xlabel('cases')
+title('ECDF of cases')
+saveas(gcf,'figures/ECDF_of_cases.png')
 close all
 
-%% 1h-1i)
+%% 1i-1j)
 %Boxplot represents the validity of results. It displays the spread of 
 % data around its median.
 % Boxplot num cases for country for day
@@ -43,7 +34,7 @@ boxplot(covid_table.cases)
 title('spread of num of cases per country per day')
 saveas(gcf,'figures/boxplot_num_cases.png')
 
-%% 1j)
+%% 1k) first part
 % extract the columns: cases, deaths
 cases_deaths=covid_table(:,[5,6]);
 [group_country,countries]=findgroups(covid_table.countriesAndTerritories);
@@ -51,18 +42,35 @@ cases_deaths=covid_table(:,[5,6]);
 means_differences=splitapply(@mean_cases_mean_deaths,cases_deaths.cases,cases_deaths.deaths,group_country);
 % means_differences is a cell, where in each cell we have array of mean
 % differences.
-countries_indices=cellfun(@cell_length,means_differences,countries);
-boxplot(cell2mat(means_differences),A);
+countries_indices=cellfun(@cell_length,means_differences,num2cell((1:length(countries)).'));
+boxplot(cell2mat(means_differences),cell2mat(countries_indices));
+xlabel('countries')
+ylabel('mean(Cases) - mean(deaths)')
+title('countries are columns, measurement: 10 days')
+saveas(gcf,'figures/boxplot_per_country.png')
+close all
 
+%% 1k) second part
+date_num=datenum(covid_table.dateRep);
+%split data to groups of 10 days each:
+[group_10_days,days]=findgroups...
+    (arrayfun(@(x)floor(x/10),date_num-min(date_num)));
 
-
-
-%% 1j) backup
-% extract the columns: cases, deaths
-cases_deaths=covid_table(:,[5,6]);
-[group_country,countries]=findgroups(covid_table.countriesAndTerritories);
-% apply mean_cases_mean_deaths function to each country:
-means_differences=splitapply(@mean_cases_mean_deaths,...
-    cases_deaths.cases,cases_deaths.deaths,group_country);
+% apply mean_cases_mean_deaths function to each 10 days:
+means_differences=splitapply(@mean_cases_mean_deaths_divide_by_country,...
+    cases_deaths,group_country,group_10_days);
 % means_differences is a cell, where in each cell we have array of mean
 % differences.
+ten_days_indices=cell2mat(cellfun(@cell_length,means_differences,num2cell(days)));
+boxplot(cell2mat(means_differences),ten_days_indices);
+xlabel('10 days groups')
+ylabel('mean(Cases) - mean(deaths)')
+title('10 days groups are columns, measurements: countries')
+x_ticks_dates=datetime(10*unique(ten_days_indices)+...
+    min(date_num),'ConvertFrom','datenum','Format','eeee MMMM d, y');
+
+saveas(gcf,'figures/boxplot_per_10_days.png')
+close all
+
+xtickformat('dd-MM')
+xticklabels(str(x_ticks_dates))
