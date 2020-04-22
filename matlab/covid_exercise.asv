@@ -32,6 +32,7 @@ close all
 % Boxplot num cases for country for day
 boxplot(covid_table.cases)
 title('spread of num of cases per country per day')
+xticks([])
 saveas(gcf,'figures/boxplot_num_cases.png')
 
 %% 1k) first part
@@ -88,13 +89,35 @@ sum_cases=splitapply(sum_for_each_day,...
 % sum_cases is a cell, where in each cell we have an array of total
 % cases in a day
 month_table_indices=cell2mat(cellfun(@cell_length,sum_cases,num2cell(months)));
-boxplot(cell2mat(sum_cases),month_table_indices);
+year_table_indices=changem(month_table_indices,covid_table.year,covid_table.month);
+boxplot(cell2mat(sum_cases),datetime(year_table_indices,month_table_indices,15));
 xlabel('month')
-ylabel('mean(new Cases in a day)')
-title('mean(new Cases in a day) for')
-x_ticks_dates=datestr(datetime(10*unique(ten_days_indices)+...
-    min(date_num),'ConvertFrom','datenum'),'dd-mm');
-xticklabels(x_ticks_dates)
-saveas(gcf,'figures/boxplot_per_10_days.png')
+ylabel('mean(new cases in a day)')
+title('mean(new cases in a day) for the whole world')
+months=flipud(unique(covid_table.month,'stable'));
+year_for_month=changem(months,covid_table.year,covid_table.month);
+x_ticks_dates=datestr(datetime(year_for_month,months,15),'mmmm-yy');
+xticklabels(cellstr(x_ticks_dates))
+saveas(gcf,'figures/boxplot_cases_per_month.png')
 close all
-datetick('x','M')
+%% 1m)
+% Plot cumulative sum of cases in country with specific jump, 
+% which is determined by the user.
+% input:
+jump_days=str2double(inputdlg('What is the jump for displaying the cumsum?'));
+%%
+% apply the function to each country separately:
+clc
+date_axis=datenum(datetime(year_table_indices,month_table_indices,15));
+boxplot(cell2mat(sum_cases),date_axis,'Positions',unique(date_axis));
+
+hold on
+splitapply(@(a,b)cumsum_country_same_fig(jump_days,a,b),covid_table(:,[1,5]),...
+    group_country);
+hold off
+xticklabels(cellstr(x_ticks_dates))
+title(['cases cumsum in countries vs world cases boxplot, jump:',num2str(jump_days)])
+xlabel('cases')
+ylabel('date')
+saveas(gcf,['figures/boxplot_world_cases_vs_coun_cumsum_per_month.png'])
+close all
