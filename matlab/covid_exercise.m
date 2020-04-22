@@ -72,3 +72,27 @@ xticklabels(x_ticks_dates)
 saveas(gcf,'figures/boxplot_per_10_days.png')
 close all
 
+%% 1l)
+%Boxplot of sum of cases in all countries. 
+% Each column represents a month, and the measurements in each column are 
+% the total number of cases in the days of the month.
+% I.e. at most there are 31 days in a month, 
+% thus it is the maximal number of points in a column.
+day_cases=covid_table(:,[2,5]);
+%sum over cases for each day separately
+sum_for_each_day=@(days,cases){splitapply(@sum,cases,findgroups(days))};
+[month_indices,months]=findgroups(covid_table.month);
+% apply sum_for_each_day function to each month:
+sum_cases=splitapply(sum_for_each_day,...
+    day_cases,month_indices);
+% sum_cases is a cell, where in each cell we have an array of total
+% cases in a day
+month_table_indices=cell2mat(cellfun(@cell_length,sum_cases,num2cell(months)));
+boxplot(cell2mat(sum_cases),month_table_indices);
+xlabel('month')
+ylabel('mean(new cases in a day)')
+title('mean(new cases in a day) for the whole world')
+x_ticks_dates=datestr(datetime(2020,months,1),'mmmm');
+xticklabels(cellstr(x_ticks_dates))
+saveas(gcf,'figures/boxplot_cases_per_month.png')
+close all
