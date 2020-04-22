@@ -1,5 +1,6 @@
 clc
 clear variables
+global covid_table
 covid_table = readtable("COVID-19-geographic-disbtribution-worldwide.xlsx");
 
 %% 1c-1e)
