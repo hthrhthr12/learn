@@ -28,13 +28,13 @@ num_cases=p.Results.num_cases;
 min_cases=p.Results.min_cases;
 max_cases=p.Results.max_cases;
 tolerance_cases=p.Results.tolerance_cases;
-%% remove dates out of the region
+%%
 date_input=datenum(date_string);
 dates_table=datenum(covid_table.dateRep);
 relevant_table=covid_table(abs(date_input-dates_table)<=tolerance,...
     {'dateRep','cases','deaths','countriesAndTerritories'});
 
-%% check if empty
+%% calculate statistics
 if isempty(relevant_table)
     total_cases=0;
     country_min_cases=0;
@@ -42,7 +42,6 @@ if isempty(relevant_table)
     mean_cases_for_each_country=0;
     return
 end
-%% calculate statistics
 total_cases=sum(relevant_table.cases);
 
 [country_indices,countries]=findgroups(relevant_table.countriesAndTerritories);
@@ -56,13 +55,7 @@ country_max_cases=countries(index_country);
 
 bounds_cases=[max(num_cases-tolerance_cases,min_cases),...
     min(num_cases+tolerance_cases,max_cases)];
-relevant_table=relevant_table(...
-    bounds_cases(1)<relevant_table.cases<bounds_cases(2),:);
-%% check if empty
-if isempty(relevant_table)
-    mean_cases_for_each_country=0;
-    return
-end
+relevant_table=relevant_table(...bounds_cases(1)<relevant_table.cases<bounds_cases(2),:);
 
 mean_cases_for_each_country=splitapply(@mean,relevant_table.cases...
     ,findgroups(relevant_table.countriesAndTerritories));
