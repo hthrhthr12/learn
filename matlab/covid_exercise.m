@@ -131,3 +131,29 @@ xlabel('cases')
 ylabel('date')
 grid on
 close all
+%% 1p)
+% Israel
+clc
+close all
+Israel_date_cases=covid_table(covid_table.countriesAndTerritories=="Israel",...
+    {'dateRep','cases'});
+plot(Israel_date_cases.dateRep,Israel_date_cases.cases)
+grid on
+ylabel('cases number')
+title('number of cases in israel over time')
+figure
+%graphs of mean and variance cases for windows_sizes
+windows_sizes=[5,7,10];
+
+function_windows=@(window)plot_apply_to_group_days...
+    (@mean,Israel_date_cases,window);
+arrayfun(function_windows,windows_sizes);
+title('mean cases in israel, different window')
+ylabel('mean cases')
+figure
+function_windows=@(window)plot_apply_to_group_days...
+    (@var,Israel_date_cases,window);
+arrayfun(function_windows,windows_sizes);
+title('variance cases in israel, different window')
+ylabel('variance cases')
+close all
