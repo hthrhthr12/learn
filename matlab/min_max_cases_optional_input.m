@@ -11,6 +11,10 @@ function [total_cases,country_min_cases,country_max_cases,...
 % country with min deaths in those days
 % country with max cases in those days
 % Date with maximal cases
+
+%Examples:
+% min_max_cases_optional_input(covid_table,'11 April 2020',2,'min_cases',11,'max_cases',11)
+% min_max_cases_optional_input(covid_table,'11 April 2020',2,'min_cases',11)
 %% retrieve optional input
 
 non_negative=@(x)(x>=0); % assuming integer
