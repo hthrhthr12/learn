@@ -46,5 +46,3 @@ clc
 close all
 
 cellfun(@(word){char(word+[1,zeros(1,length(word)-1)])},hospital.LastName)
-
-
