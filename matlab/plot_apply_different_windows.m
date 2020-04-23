@@ -1,3 +1,17 @@
+function plot_apply_different_windows...
+    (function_apply,table_date_cases,windows_sizes)
+% plot function_apply results for different windows_sizes
+
+figure
+function_windows=@(window)plot_apply_to_group_days...
+    (function_apply,table_date_cases,window);
+arrayfun(function_windows,windows_sizes);
+function_name=func2str(function_apply);
+title([function_name,' cases in israel, different window'])
+ylabel([function_name,' cases'])
+end
+
+
 function plot_apply_to_group_days...
     (function_apply,table_date_cases,window)
 %apply a function to group of days and plot the result

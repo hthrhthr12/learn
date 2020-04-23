@@ -141,19 +141,11 @@ plot(Israel_date_cases.dateRep,Israel_date_cases.cases)
 grid on
 ylabel('cases number')
 title('number of cases in israel over time')
-figure
+
+
 %graphs of mean and variance cases for windows_sizes
 windows_sizes=[5,7,10];
-
-function_windows=@(window)plot_apply_to_group_days...
-    (@mean,Israel_date_cases,window);
-arrayfun(function_windows,windows_sizes);
-title('mean cases in israel, different window')
-ylabel('mean cases')
-figure
-function_windows=@(window)plot_apply_to_group_days...
-    (@var,Israel_date_cases,window);
-arrayfun(function_windows,windows_sizes);
-title('variance cases in israel, different window')
-ylabel('variance cases')
+functions_apply={@mean,@var};
+cellfun(@(function_apply)plot_apply_different_windows...
+    (function_apply,Israel_date_cases,windows_sizes),functions_apply)
 close all
