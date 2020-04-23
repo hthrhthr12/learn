@@ -1,0 +1,11 @@
+function KL_divergence = Kullback_Liebler(distribution_name)
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+distibutions={'Normal','Rician','Rayleigh','Uniform'};
+p = inputParser;
+addRequired(p,'covid_table',@istable);
+parse(p,);
+
+distribution = makedist(distribution_name);
+end
+
