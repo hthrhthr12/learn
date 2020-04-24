@@ -131,6 +131,31 @@ xlabel('cases')
 ylabel('date')
 grid on
 close all
+%% 1n)
+%total_cases in dates in [date_string-tolerance,date_string+tolerance]
+% country with min deaths in those days
+% country with max cases in those days
+% Date with maximal cases
+[total_cases,country_min_deaths,country_max_cases,...
+    date_maximal_cases,mean_cases_for_each_country]...
+    = cases_date('11 April 2020',2,covid_table);
+
+%% 1o)
+% optional input: min_cases, max_cases, num_cases,tolerance
+% The function treats cases which are between the min and max values, and
+% obeys that the distance to the num_cases is smaller than the tolerance.
+
+%returns:
+%total_cases in dates in [date_string-tolerance,date_string+tolerance]
+% country with min deaths in those days
+% country with max cases in those days
+% Countries and their mean cases, which obey the conditions
+
+
+% Example:
+[total_cases,country_min_cases,country_max_cases,...
+    mean_cases_for_each_country]= min_max_cases_optional_input(covid_table,'11 April 2020',2,'min_cases',11,'max_cases',11);
+
 %% 1p)
 % Israel
 clc
@@ -148,4 +173,13 @@ windows_sizes=[5,7,10];
 functions_apply={@mean,@var};
 cellfun(@(function_apply)plot_apply_different_windows...
     (function_apply,Israel_date_cases,windows_sizes),functions_apply)
-close all
+%%
+% Probability distributions
+% Example
+[KL_100_1000,KL_100_10000,KL_1000_1000]=Kullback_Liebler('Normal','mu',75,'sigma',10);
+
+%% Hospital
+% In hospital file
+
+%% Mandelbrot_set
+% In Mandelbrot_set file

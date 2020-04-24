@@ -37,7 +37,6 @@ count = log( count );
 % Show
 imagesc( x, y, count );
 colormap( [jet();flipud(jet());0 0 0] );
-axis off
 title('Mandelbrot set');
 
 end

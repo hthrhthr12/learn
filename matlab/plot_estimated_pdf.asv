@@ -3,6 +3,7 @@ function pdf_return=plot_estimated_pdf(distribution,sample )
 % and plot it in the same figure, with legend.
 % vs ksdensity
 
+close all
 fig=figure;
 xlim([min(sample),max(sample)])
 size_sample=length(sample);
@@ -20,12 +21,13 @@ plot(x,bin_heights,'DisplayName','estimated pdf: histogram'); %PDF
 hold on
 plot(x,pdf(distribution,x),'DisplayName','true pdf');
 plot(x,ksdensity(sample,x),'DisplayName','estimated pdf: ksdensity'); %PDF
-arrayfun(@(x)plot_vertical_line(fig,x),sample(1:min(100,length(sample))))
+arrayfun(@(x)plot_vertical_line(fig,x),sample(1:min(100,length())))
+
 annotation('textbox',[.2 .5 .4 .4],'String',...
     'The dashed lines represent part of the true samples','FitBoxToText','on');
 hold off
 grid on
+legend('Location','best')
 title(['estimated pdfs vs actual pdf, for sample size: ',num2str(size_sample)])
-legend('Location','southeast')
 pdf_return={[x;bin_heights]};
 end

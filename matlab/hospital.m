@@ -1,4 +1,6 @@
-load hospital
+clc, clear, close all
+%%
+load('hospital');
 %%
 % Plot scatter of weight as function of age, color by sex and size by smoking
 clc

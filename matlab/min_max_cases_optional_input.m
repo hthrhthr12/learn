@@ -10,10 +10,11 @@ function [total_cases,country_min_cases,country_max_cases,...
 %total_cases in dates in [date_string-tolerance,date_string+tolerance]
 % country with min deaths in those days
 % country with max cases in those days
-% Date with maximal cases
+% Countries and their mean cases, which obey the conditions
 
 %Examples:
-% min_max_cases_optional_input(covid_table,'11 April 2020',2,'min_cases',11,'max_cases',11)
+%[total_cases,country_min_cases,country_max_cases,...
+%     mean_cases_for_each_country]= min_max_cases_optional_input(covid_table,'11 April 2020',2,'min_cases',11,'max_cases',11)
 % min_max_cases_optional_input(covid_table,'11 April 2020',2,'min_cases',11)
 %% retrieve optional input
 
@@ -68,6 +69,8 @@ if isempty(relevant_table)
     return
 end
 
-mean_cases_for_each_country=splitapply(@mean,relevant_table.cases...
+mean_cases_for_each_country=splitapply(@(x,country){mean(x),country(1)},relevant_table.cases...
+    ,relevant_table.countriesAndTerritories...
     ,findgroups(relevant_table.countriesAndTerritories));
+
 end

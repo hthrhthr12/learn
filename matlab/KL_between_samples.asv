@@ -20,10 +20,11 @@ dx=x_est(2)-x_est(1);
 KL_divergence=sum(dx*sample_1_est.*log(sample_1_est./sample_2_est));
 
 %% KL based on ksdensity:
-sample_1_est=ksdensity(samples{1,1},x_est);
-sample_2_est=ksdensity(samples{1,2},x_est);
+sample_1_est=ksdensity(samples(1),x_est);
+sample_1_est=ksdensity(samples(2),x_est);
+6+
 
-KL_divergence_ksdensity=sum(dx*sample_1_est.*log(sample_1_est./sample_2_est));
+KL_divergence_=sum(dx*sample_1_est.*log(sample_1_est./sample_2_est));
 
-KL_divergence={KL_divergence,KL_divergence_ksdensity};
+
 end
