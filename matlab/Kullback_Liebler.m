@@ -8,8 +8,6 @@ function [KL_100_1000,KL_100_10000,KL_1000_1000]...
 %
 %assuming common region for distributions
 
-clc
-close all
 distributions={'Normal','Rician','Rayleigh','Uniform'};
 p = inputParser;
 addRequired(p,'distribution_name',@(name)ismember(name,distributions));
