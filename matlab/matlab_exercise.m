@@ -179,6 +179,8 @@ cellfun(@(function_apply)plot_apply_different_windows...
 clc
 close all
 [KL_100_1000,KL_100_10000,KL_1000_1000]=Kullback_Liebler('Normal','mu',75,'sigma',10);
+%[KL_100_1000,KL_100_10000,KL_1000_1000]=Kullback_Liebler('Rician');
+% [KL_100_1000,KL_100_10000,KL_1000_1000]=Kullback_Liebler('Uniform');
 
 
 %% Hospital
