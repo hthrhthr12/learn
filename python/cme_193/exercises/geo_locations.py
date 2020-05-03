@@ -20,11 +20,12 @@ from shapely.geometry import MultiPoint
 
 data = pd.read_csv('geonames-database\geonames.csv', usecols=['latitude', 'longitude', 'country code'])
 EARTH_RADIUS_KM = distance.EARTH_RADIUS
-WGS84 = "EPSG:4326"
+WGS84_DEGREE = "EPSG:4326"  # units: degree
+WGS84_METER = "EPSG:3395"  # units: m, World Mercator
 
 
 def plot_map(mean_latitude=-10.32683, mean_longitude=15.01281
-             , radius_meters=7 * 10 ** 3, print_by_matplotib=True):
+             , radius_meters=7 * 10 ** 3, print_by_matplotlib=True):
     """plot on a map places in a specific radius
     assuming the longitude is not close to zeros lines
     """
@@ -37,11 +38,11 @@ def plot_map(mean_latitude=-10.32683, mean_longitude=15.01281
     lon_width = abs(np.arcsin(ratio_distance_earth) / np.cos(mean_latitude))
     lon_bounds = mean_longitude - lon_width, mean_longitude + lon_width
     plot_lat_lon_limits(mean_longitude, mean_latitude, lon_bounds, lat_bounds,
-                        radius_meters, print_by_matplotib)
+                        radius_meters, print_by_matplotlib)
 
 
 def plot_map_azimuth_aperture(mean_longitude=1.5, mean_latitude=42.5,
-                              azimuth=10, aperture=10, radius_meters=7 * 10 ** 3, print_by_matplotib=True):
+                              azimuth=10, aperture=10, radius_meters=7 * 10 ** 3, print_by_matplotlib=True):
     """plot on a map places in a specific radius
     assuming the longitude is not close to zeros lines
     """
@@ -53,11 +54,11 @@ def plot_map_azimuth_aperture(mean_longitude=1.5, mean_latitude=42.5,
     lon_width = np.arcsin(ratio_distance_earth) / np.cos(mean_latitude)
     lon_bounds = mean_longitude - lon_width, mean_longitude + lon_width
     plot_lat_lon_limits(mean_longitude, mean_latitude, lon_bounds, lat_bounds,
-                        radius_meters, print_by_matplotib)
+                        radius_meters, print_by_matplotlib)
 
 
 def plot_lat_lon_limits(mean_longitude=1.5, mean_latitude=42.5, lon_bounds=(50, 60), lat_bounds=(50, 60),
-                        radius_meters=7 * 10 ** 3, print_by_matplotib=True):
+                        radius_meters=7 * 10 ** 3, print_by_matplotlib=True):
     """plot on a map places in a specific radius
     """
     radius_km = radius_meters / 10 ** 3
@@ -94,14 +95,14 @@ def plot_lat_lon_limits(mean_longitude=1.5, mean_latitude=42.5, lon_bounds=(50, 
         return
 
     geo_data = gpd.GeoDataFrame(data_filtered['country code'],
-                                crs=WGS84,
+                                crs=WGS84_DEGREE,
                                 geometry=gpd.points_from_xy(data_filtered['longitude'], data_filtered['latitude']))
     convex_hull = MultiPoint([point for point in geo_data['geometry']]).convex_hull
-    polygon = gpd.GeoDataFrame(index=[0], crs=WGS84, geometry=[convex_hull])
+    polygon = gpd.GeoDataFrame(index=[0], crs=WGS84_DEGREE, geometry=[convex_hull])
     print(data_filtered["country code"].unique())
-    print(f"area of polygon: {convex_hull.area}")
+    print(f"area of polygon in m^2: {polygon.to_crs(WGS84_METER).area[0]}")
 
-    if print_by_matplotib:
+    if print_by_matplotlib:
         ax = geo_data.plot(marker='*', color='red', markersize=12)
         ax.set_xbound(lon_bounds[0], lon_bounds[1])
         ax.set_ybound(lat_bounds[0], lat_bounds[1])
@@ -115,4 +116,4 @@ def plot_lat_lon_limits(mean_longitude=1.5, mean_latitude=42.5, lon_bounds=(50, 
         m.save('map.html')
 
 
-plot_map(print_by_matplotib=False)
+plot_map(radius_meters=7 * 10 ** 5, print_by_matplotlib=False)
