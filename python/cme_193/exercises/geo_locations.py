@@ -116,25 +116,31 @@ def plot_lat_lon_limits(mean_longitude=1.5, mean_latitude=42.5, lon_bounds=(-180
         polygon.plot(ax=ax)
         plt.title(f"area of polygon: {polygon_area}")
     else:  # print by folium
-        m = folium.Map([mean_latitude, mean_longitude], zoom_start=5, tiles='cartodbpositron')
+        m = folium.Map([mean_latitude, mean_longitude], zoom_start=5)
+        # m = folium.Map([mean_latitude, mean_longitude], zoom_start=5, tiles='cartodbpositron', crs='EPSG4326')
         folium.GeoJson(polygon).add_to(m)
         folium.GeoJson(geo_data).add_to(m)
         folium.LatLngPopup().add_to(m)
+        m.render()
         m.save('map.html')
         if is_open_map:
             os.system('map.html')
 
 
-#
-# plot_map(radius_meters=7 * 10 ** 5, print_by_matplotlib=False)
-# plot_map_azimuth_aperture()
+plot_map(radius_meters=7 * 10 ** 5, print_by_matplotlib=True)
+plot_map_azimuth_aperture()
 #
 plot_map_azimuth_aperture(mean_longitude=1.5, mean_latitude=42.5,
                           azimuth=10, aperture=10, radius_meters=7 * 10 ** 3, print_by_matplotlib=True)
 
 plot_map_azimuth_aperture(mean_longitude=-10.32683, mean_latitude=15.01281,
-                          azimuth=-10, aperture=10, radius_meters=7 * 10 ** 5, print_by_matplotlib=True)
+                          azimuth=-10, aperture=1, radius_meters=7 * 10 ** 5, print_by_matplotlib=True)
 
 plot_map_azimuth_aperture(mean_longitude=-10.32683, mean_latitude=15.01281,
                           azimuth=10, aperture=10, radius_meters=7 * 10 ** 5, print_by_matplotlib=True)
-plot_map(print_by_matplotlib=False)
+plot_map(print_by_matplotlib=True)
+
+# israel:
+# 31.0461° N, 34.8516°E
+# -10.32683 N ,15.01281 E
+# 36 UTM

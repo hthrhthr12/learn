@@ -61,10 +61,10 @@ for _ in range(num_average):
 
 frequencies = {value: counter / (N * num_average) for value, counter in collections.Counter(values).items()}
 frequencies = sorted(frequencies.items())
-a = [scipy.special.binom(N - 1, k) * p ** k * (1 - p) ** (N - 1 - k) for k in range(N)]
+analytical = [scipy.special.binom(N - 1, k) * p ** k * (1 - p) ** (N - 1 - k) for k in range(N)]
 
 graphs = np.zeros((len(frequencies), 2))
 
 for k, (index, frequency) in enumerate(frequencies):
-    graphs[k, :] = [frequency, a[index]]
+    graphs[k, :] = [frequency, analytical[index]]
 plt.plot(graphs)

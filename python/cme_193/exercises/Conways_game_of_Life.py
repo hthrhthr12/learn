@@ -1,20 +1,25 @@
 """
 Conway's game of Life
 """
-
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import animation
+from matplotlib.pyplot import ion
+
+ion()
 
 
 def conway_game_of_life():
     """run the game"""
     size = 100
-
+    fig = plt.figure()
     x = (np.random.rand(size, size) > 0.5).astype(int)
     img = plt.imshow(x)
     plt.show()
-    for _ in range(100):
-        img.set_data(x)
+    ims = []
+
+    for _ in range(10):
+        img = plt.imshow(x)
         plt.show()
         plt.pause(0.01)  # It is necessary for the plot to update for some reason
         new_state = x
@@ -26,6 +31,10 @@ def conway_game_of_life():
                 elif not x[i, j] and neighbors_element == 3:
                     new_state[i, j] = 1
         x = new_state
+        ims.append([img])
+    ani = animation.ArtistAnimation(fig, list(ims))
+
+    ani.save('demo.mp4', writer='ffmpeg', fps=2)
 
 
 def neighbors(x, i, j):
