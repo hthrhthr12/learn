@@ -23,7 +23,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_640571b3721a473aa015e1eb5bde1097 {
+                #map_e78c33d8edbf4695baf06bbd77ec0ccd {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -35,15 +35,15 @@
 </head>
 <body>    
     
-            <div class="folium-map" id="map_640571b3721a473aa015e1eb5bde1097" ></div>
+            <div class="folium-map" id="map_e78c33d8edbf4695baf06bbd77ec0ccd" ></div>
         
 </body>
 <script>    
     
-            var map_640571b3721a473aa015e1eb5bde1097 = L.map(
-                "map_640571b3721a473aa015e1eb5bde1097",
+            var map_e78c33d8edbf4695baf06bbd77ec0ccd = L.map(
+                "map_e78c33d8edbf4695baf06bbd77ec0ccd",
                 {
-                    center: [42.5, 1.5],
+                    center: [-10.32683, 15.01281],
                     crs: L.CRS.EPSG3857,
                     zoom: 5,
                     zoomControl: true,
@@ -55,56 +55,56 @@
 
         
     
-            var tile_layer_fa70be9d7f6848de8e6d20d49f1ae744 = L.tileLayer(
+            var tile_layer_143109d8a14c43d0b74938f63ea991e4 = L.tileLayer(
                 "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
                 {"attribution": "\u0026copy; \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"http://cartodb.com/attributions\"\u003eCartoDB\u003c/a\u003e, CartoDB \u003ca href =\"http://cartodb.com/attributions\"\u003eattributions\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
-            ).addTo(map_640571b3721a473aa015e1eb5bde1097);
+            ).addTo(map_e78c33d8edbf4695baf06bbd77ec0ccd);
         
     
-        function geo_json_7c7b6908fe7f41f7a6d5bf4a37db6337_onEachFeature(feature, layer) {
+        function geo_json_9cc371ee835d4065822be49d38e7f2d2_onEachFeature(feature, layer) {
             layer.on({
                 click: function(e) {
-                    map_640571b3721a473aa015e1eb5bde1097.fitBounds(e.target.getBounds());
+                    map_e78c33d8edbf4695baf06bbd77ec0ccd.fitBounds(e.target.getBounds());
                 }
             });
         };
-        var geo_json_7c7b6908fe7f41f7a6d5bf4a37db6337 = L.geoJson(null, {
-                onEachFeature: geo_json_7c7b6908fe7f41f7a6d5bf4a37db6337_onEachFeature,
+        var geo_json_9cc371ee835d4065822be49d38e7f2d2 = L.geoJson(null, {
+                onEachFeature: geo_json_9cc371ee835d4065822be49d38e7f2d2_onEachFeature,
             
         });
-        function geo_json_7c7b6908fe7f41f7a6d5bf4a37db6337_add (data) {
-            geo_json_7c7b6908fe7f41f7a6d5bf4a37db6337.addData(data)
-                .addTo(map_640571b3721a473aa015e1eb5bde1097);
+        function geo_json_9cc371ee835d4065822be49d38e7f2d2_add (data) {
+            geo_json_9cc371ee835d4065822be49d38e7f2d2.addData(data)
+                .addTo(map_e78c33d8edbf4695baf06bbd77ec0ccd);
         }
-            geo_json_7c7b6908fe7f41f7a6d5bf4a37db6337_add({"bbox": [1.4878799999999999, 42.49892, 1.50248, 42.5003], "features": [{"bbox": [1.4878799999999999, 42.49892, 1.50248, 42.5003], "geometry": {"coordinates": [[[1.50019, 42.49892], [1.4892299999999998, 42.499109999999995], [1.4878799999999999, 42.50008], [1.4931299999999998, 42.5003], [1.49843, 42.499520000000004], [1.50248, 42.49892], [1.50019, 42.49892]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+            geo_json_9cc371ee835d4065822be49d38e7f2d2_add({"bbox": [15.01281, -10.326830000000001, 15.01281, -10.326830000000001], "features": [{"bbox": [15.01281, -10.326830000000001, 15.01281, -10.326830000000001], "geometry": {"coordinates": [15.01281, -10.326830000000001], "type": "Point"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
         
     
-        function geo_json_04aae3871ed045eca115f88c75cb291c_onEachFeature(feature, layer) {
+        function geo_json_d7a5775e05d54c0c9aeb7137afab325c_onEachFeature(feature, layer) {
             layer.on({
                 click: function(e) {
-                    map_640571b3721a473aa015e1eb5bde1097.fitBounds(e.target.getBounds());
+                    map_e78c33d8edbf4695baf06bbd77ec0ccd.fitBounds(e.target.getBounds());
                 }
             });
         };
-        var geo_json_04aae3871ed045eca115f88c75cb291c = L.geoJson(null, {
-                onEachFeature: geo_json_04aae3871ed045eca115f88c75cb291c_onEachFeature,
+        var geo_json_d7a5775e05d54c0c9aeb7137afab325c = L.geoJson(null, {
+                onEachFeature: geo_json_d7a5775e05d54c0c9aeb7137afab325c_onEachFeature,
             
         });
-        function geo_json_04aae3871ed045eca115f88c75cb291c_add (data) {
-            geo_json_04aae3871ed045eca115f88c75cb291c.addData(data)
-                .addTo(map_640571b3721a473aa015e1eb5bde1097);
+        function geo_json_d7a5775e05d54c0c9aeb7137afab325c_add (data) {
+            geo_json_d7a5775e05d54c0c9aeb7137afab325c.addData(data)
+                .addTo(map_e78c33d8edbf4695baf06bbd77ec0ccd);
         }
-            geo_json_04aae3871ed045eca115f88c75cb291c_add({"bbox": [1.4878799999999999, 42.49892, 1.50248, 42.5003], "features": [{"bbox": [1.49843, 42.499520000000004, 1.49843, 42.499520000000004], "geometry": {"coordinates": [1.49843, 42.499520000000004], "type": "Point"}, "id": "412", "properties": {"country code": "AD"}, "type": "Feature"}, {"bbox": [1.4931299999999998, 42.5003, 1.4931299999999998, 42.5003], "geometry": {"coordinates": [1.4931299999999998, 42.5003], "type": "Point"}, "id": "1106", "properties": {"country code": "AD"}, "type": "Feature"}, {"bbox": [1.50248, 42.49892, 1.50248, 42.49892], "geometry": {"coordinates": [1.50248, 42.49892], "type": "Point"}, "id": "2278", "properties": {"country code": "AD"}, "type": "Feature"}, {"bbox": [1.4892299999999998, 42.499109999999995, 1.4892299999999998, 42.499109999999995], "geometry": {"coordinates": [1.4892299999999998, 42.499109999999995], "type": "Point"}, "id": "2491", "properties": {"country code": "AD"}, "type": "Feature"}, {"bbox": [1.50019, 42.49892, 1.50019, 42.49892], "geometry": {"coordinates": [1.50019, 42.49892], "type": "Point"}, "id": "2527", "properties": {"country code": "AD"}, "type": "Feature"}, {"bbox": [1.4878799999999999, 42.50008, 1.4878799999999999, 42.50008], "geometry": {"coordinates": [1.4878799999999999, 42.50008], "type": "Point"}, "id": "2774", "properties": {"country code": "AD"}, "type": "Feature"}], "type": "FeatureCollection"});
+            geo_json_d7a5775e05d54c0c9aeb7137afab325c_add({"bbox": [15.01281, -10.326830000000001, 15.01281, -10.326830000000001], "features": [{"bbox": [15.01281, -10.326830000000001, 15.01281, -10.326830000000001], "geometry": {"coordinates": [15.01281, -10.326830000000001], "type": "Point"}, "id": "159311", "properties": {"country code": "AO"}, "type": "Feature"}], "type": "FeatureCollection"});
         
     
-                var lat_lng_popup_a746a4d2ee4149578c4417f82504416a = L.popup();
+                var lat_lng_popup_e711ac826f1d46a4883e96069b2b2324 = L.popup();
                 function latLngPop(e) {
-                    lat_lng_popup_a746a4d2ee4149578c4417f82504416a
+                    lat_lng_popup_e711ac826f1d46a4883e96069b2b2324
                         .setLatLng(e.latlng)
                         .setContent("Latitude: " + e.latlng.lat.toFixed(4) +
                                     "<br>Longitude: " + e.latlng.lng.toFixed(4))
-                        .openOn(map_640571b3721a473aa015e1eb5bde1097);
+                        .openOn(map_e78c33d8edbf4695baf06bbd77ec0ccd);
                     }
-                map_640571b3721a473aa015e1eb5bde1097.on('click', latLngPop);
+                map_e78c33d8edbf4695baf06bbd77ec0ccd.on('click', latLngPop);
             
 </script>
