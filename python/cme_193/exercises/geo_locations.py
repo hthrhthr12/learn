@@ -10,6 +10,8 @@ israel:
 in GPS coordinates
 """
 
+import os
+
 import folium
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -24,8 +26,8 @@ WGS84_DEGREE = "EPSG:4326"  # units: degree
 WGS84_METER = "EPSG:3395"  # units: m, World Mercator
 
 
-def plot_map(mean_latitude=-10.32683, mean_longitude=15.01281
-             , radius_meters=7 * 10 ** 3, print_by_matplotlib=True):
+def plot_map(mean_latitude=-10.32683, mean_longitude=15.01281,
+             radius_meters=7 * 10 ** 3, print_by_matplotlib=True, is_open_map=False):
     """plot on a map places in a specific radius
     assuming the longitude is not close to zeros lines
     """
@@ -38,27 +40,30 @@ def plot_map(mean_latitude=-10.32683, mean_longitude=15.01281
     lon_width = abs(np.arcsin(ratio_distance_earth) / np.cos(mean_latitude))
     lon_bounds = mean_longitude - lon_width, mean_longitude + lon_width
     plot_lat_lon_limits(mean_longitude, mean_latitude, lon_bounds, lat_bounds,
-                        radius_meters, print_by_matplotlib)
+                        radius_meters, print_by_matplotlib, is_open_map)
 
 
 def plot_map_azimuth_aperture(mean_longitude=1.5, mean_latitude=42.5,
-                              azimuth=10, aperture=10, radius_meters=7 * 10 ** 3, print_by_matplotlib=True):
+                              azimuth=10, aperture=10, radius_meters=7 * 10 ** 3, print_by_matplotlib=True,
+                              is_open_map=False):
     """plot on a map places in a specific radius
     assuming the longitude is not close to zeros lines
     """
     # (latitude, longitude)
     radius_km = radius_meters / 10 ** 3
     ratio_distance_earth = radius_km / EARTH_RADIUS_KM
-    lat_bounds = max(mean_latitude - ratio_distance_earth, azimuth - aperture) \
-        , min(mean_latitude + ratio_distance_earth, azimuth + aperture)
-    lon_width = np.arcsin(ratio_distance_earth) / np.cos(mean_latitude)
-    lon_bounds = mean_longitude - lon_width, mean_longitude + lon_width
+    lat_bounds = mean_latitude - ratio_distance_earth, mean_latitude + ratio_distance_earth
+
+    lon_width = abs(np.arcsin(ratio_distance_earth) / np.cos(mean_latitude))
+    lon_bounds = max(mean_longitude - lon_width, azimuth - aperture), \
+                 min(mean_longitude + lon_width, azimuth + aperture)
+
     plot_lat_lon_limits(mean_longitude, mean_latitude, lon_bounds, lat_bounds,
-                        radius_meters, print_by_matplotlib)
+                        radius_meters, print_by_matplotlib, is_open_map)
 
 
-def plot_lat_lon_limits(mean_longitude=1.5, mean_latitude=42.5, lon_bounds=(50, 60), lat_bounds=(50, 60),
-                        radius_meters=7 * 10 ** 3, print_by_matplotlib=True):
+def plot_lat_lon_limits(mean_longitude=1.5, mean_latitude=42.5, lon_bounds=(-180, 180), lat_bounds=(-90, 90),
+                        radius_meters=7 * 10 ** 3, print_by_matplotlib=True, is_open_map=False):
     """plot on a map places in a specific radius
     """
     radius_km = radius_meters / 10 ** 3
@@ -86,12 +91,13 @@ def plot_lat_lon_limits(mean_longitude=1.5, mean_latitude=42.5, lon_bounds=(50, 
         data_filtered = data_filtered[is_in_region]
 
     if data_filtered.empty:
-        distance_lon = np.abs(data.longitude - mean_longitude)
-        distance_lat = np.abs(data.latitude - mean_latitude)
-        closest_lon = data.longitude[[np.argmin(distance_lon), np.argmax(distance_lon)]]
-        closest_lat = data.latitude[[np.argmin(distance_lat), np.argmax(distance_lat)]]
-        print(f"minimal and maximal closest longitude {closest_lon}"
-              f"minimal and maximal closest latitude {closest_lat}")
+        # return closest longitude and latitude:
+        closest_lon = max(data.longitude[data.longitude < mean_longitude]), min(
+            data.longitude[data.longitude > mean_longitude])
+        closest_lat = max(data.latitude[data.latitude < mean_latitude]), min(
+            data.latitude[data.latitude > mean_latitude])
+        print(f"closest longitude to {mean_longitude}: minimal:{closest_lon[0]},maximal:{closest_lon[1]}\n"
+              f"closest latitude to {mean_latitude}: minimal:{closest_lat[0]},maximal:{closest_lat[1]}")
         return
 
     geo_data = gpd.GeoDataFrame(data_filtered['country code'],
@@ -100,20 +106,35 @@ def plot_lat_lon_limits(mean_longitude=1.5, mean_latitude=42.5, lon_bounds=(50, 
     convex_hull = MultiPoint([point for point in geo_data['geometry']]).convex_hull
     polygon = gpd.GeoDataFrame(index=[0], crs=WGS84_DEGREE, geometry=[convex_hull])
     print(data_filtered["country code"].unique())
-    print(f"area of polygon in m^2: {polygon.to_crs(WGS84_METER).area[0]}")
+    polygon_area = polygon.to_crs(WGS84_METER).area[0]
+    print(f"area of polygon in m^2: {polygon_area}")
 
     if print_by_matplotlib:
         ax = geo_data.plot(marker='*', color='red', markersize=12)
         ax.set_xbound(lon_bounds[0], lon_bounds[1])
         ax.set_ybound(lat_bounds[0], lat_bounds[1])
         polygon.plot(ax=ax)
-        plt.title(f"area of polygon: {convex_hull.area}")
+        plt.title(f"area of polygon: {polygon_area}")
     else:  # print by folium
         m = folium.Map([mean_latitude, mean_longitude], zoom_start=5, tiles='cartodbpositron')
         folium.GeoJson(polygon).add_to(m)
         folium.GeoJson(geo_data).add_to(m)
         folium.LatLngPopup().add_to(m)
         m.save('map.html')
+        if is_open_map:
+            os.system('map.html')
 
 
-plot_map(radius_meters=7 * 10 ** 5, print_by_matplotlib=False)
+#
+# plot_map(radius_meters=7 * 10 ** 5, print_by_matplotlib=False)
+# plot_map_azimuth_aperture()
+#
+plot_map_azimuth_aperture(mean_longitude=1.5, mean_latitude=42.5,
+                          azimuth=10, aperture=10, radius_meters=7 * 10 ** 3, print_by_matplotlib=True)
+
+plot_map_azimuth_aperture(mean_longitude=-10.32683, mean_latitude=15.01281,
+                          azimuth=-10, aperture=10, radius_meters=7 * 10 ** 5, print_by_matplotlib=True)
+
+plot_map_azimuth_aperture(mean_longitude=-10.32683, mean_latitude=15.01281,
+                          azimuth=10, aperture=10, radius_meters=7 * 10 ** 5, print_by_matplotlib=True)
+plot_map(print_by_matplotlib=False)
