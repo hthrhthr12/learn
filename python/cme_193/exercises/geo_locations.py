@@ -34,7 +34,8 @@ data = pd.read_csv('geonames-database\geonames.csv', usecols=['latitude', 'longi
 
 
 def plot_map(mean_latitude=31.0461, mean_longitude=34.8516,
-             radius_meters=7 * 10 ** 3, print_by_matplotlib=True, is_open_map=False, only_filter=False):
+             radius_meters=7 * 10 ** 3, print_by_matplotlib=True, is_open_map=False, only_filter=False,
+             geodesic_distance=False):
     """
     plot on a map places in a specific radius
     assuming the longitude is not close to zeros lines
@@ -56,31 +57,27 @@ def plot_map(mean_latitude=31.0461, mean_longitude=34.8516,
             geo_data_filtered.longitude.between(min_max_lon_lat[0], min_max_lon_lat[2])]
     # reset index
     geo_data_filtered.reset_index(drop=True, inplace=True)
-    # geodesic distance
-    geo_data_filtered = geo_data_filtered[geo_data_filtered.apply(
-        lambda location: distance.distance((location.latitude, location.longitude), mean_location) <= radius_km,
-        axis=1)]
 
-    # locations = gpd.GeoSeries(gpd.points_from_xy(geo_data_filtered['longitude'],geo_data_filtered['latitude']))
-    geo_data_meter = gpd.GeoDataFrame(geo_data_filtered['country code'], crs=WGS84_DEGREE,
-                                      geometry=gpd.points_from_xy(geo_data_filtered['longitude'],
-                                                                  geo_data_filtered['latitude'])).to_crs(
-        crs=WGS84_METER_SPHERE)
+    if geodesic_distance:
+        # geodesic distance
+        geo_data_filtered = geo_data_filtered[geo_data_filtered.apply(
+            lambda location: distance.distance((location.latitude, location.longitude), mean_location) <= radius_km,
+            axis=1)]
+        geo_data_meter = gpd.GeoDataFrame(geo_data_filtered['country code'], crs=WGS84_DEGREE,
+                                          geometry=gpd.points_from_xy(geo_data_filtered['longitude'],
+                                                                      geo_data_filtered['latitude'])).to_crs(
+            crs=WGS84_METER_SPHERE)
 
-    # geo_data = geo_data[geo_data.geometry.within(circle_search)]
-    # geo_data_meter = geo_data_meter[geo_data_meter.geometry.within(circle_search_meters)]
-    # can be solved by distance.distance
+    else:
+        geo_data_meter = gpd.GeoDataFrame(geo_data_filtered['country code'], crs=WGS84_DEGREE,
+                                          geometry=gpd.points_from_xy(geo_data_filtered['longitude'],
+                                                                      geo_data_filtered['latitude'])).to_crs(
+            crs=WGS84_METER_SPHERE)
+        geo_data_meter = geo_data_meter[geo_data_meter.geometry.within(circle_search_meters)]
+
     if only_filter:
         return mean_location, circle_search_meters, geo_data_meter
     plot_locations(mean_location, circle_search_meters, geo_data_meter, print_by_matplotlib, is_open_map)
-
-    # data_filtered.apply(
-    #     lambda location: distance.distance((location.latitude, location.longitude), mean_location),
-    #     axis=1)
-    #
-    # geo_data = gpd.GeoDataFrame(geo_data_filtered['country code'], crs=WGS84_DEGREE,
-    #                             geometry=gpd.points_from_xy(geo_data_filtered['longitude'],
-    #                                                         geo_data_filtered['latitude']))
 
 
 def plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
@@ -129,12 +126,6 @@ def plot_locations(mean_location, circle_search, geo_data, print_by_matplotlib, 
     print(f"area of polygon in m^2: {polygon_area}")
 
     if print_by_matplotlib:
-        # circle_search = gpd.GeoSeries(Point(mean_location[-1::-1]), crs=WGS84_DEGREE)
-        #
-        # circle_search = circle_search.to_crs(crs=WGS84_METER_SPHERE).buffer(radius_meters)
-        # geo_data = geo_data.to_crs(crs=WGS84_METER_SPHERE)
-        # polygon = polygon.to_crs(crs=WGS84_METER_SPHERE)
-
         ax = geo_data.plot(marker='*', color='red', markersize=12)
         polygon.plot(ax=ax, facecolor='none', edgecolor='k')
         circle_search.plot(ax=ax, facecolor='none', edgecolor='k')
@@ -166,6 +157,3 @@ plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
 
 # country on the board:
 plot_map(mean_longitude=35.7860, mean_latitude=33.3058, radius_meters=7 * 10 ** 3)
-
-# circle_search.buffer(11)
-# create polygon
