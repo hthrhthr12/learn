@@ -36,7 +36,7 @@ data.dropna(axis=0, how='any', inplace=True)
 
 def plot_map(mean_latitude=31.0461, mean_longitude=34.8516,
              radius_meters=7 * 10 ** 3, print_by_matplotlib=True, is_open_map=False, only_filter=False,
-             geodesic_distance=True):
+             geodesic_distance=False):
     """
     plot on a map places in a specific radius
     assuming the longitude is not close to zeros lines
@@ -74,7 +74,7 @@ def plot_map(mean_latitude=31.0461, mean_longitude=34.8516,
                                           geometry=gpd.points_from_xy(geo_data_filtered['longitude'],
                                                                       geo_data_filtered['latitude'])).to_crs(
             crs=WGS84_METER_SPHERE)
-        geo_data_meter = geo_data_meter[geo_data_meter.geometry.within(circle_search_meters)]
+        geo_data_meter = geo_data_meter[geo_data_meter.geometry.within(circle_search_meters[0])]
 
     if only_filter:
         return mean_location, circle_search_meters, geo_data_meter
@@ -151,7 +151,6 @@ def plot_locations(mean_location, circle_search, geo_data, print_by_matplotlib, 
 plot_map_azimuth_aperture()
 
 plot_map(radius_meters=7 * 10 ** 4, print_by_matplotlib=True)
-plot_map(radius_meters=7 * 10 ** 5, print_by_matplotlib=False)
 plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
                           azimuth=10, aperture=30000, radius_meters=7 * 10 ** 3, print_by_matplotlib=True)
 # israel:
