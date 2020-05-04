@@ -8,7 +8,7 @@ mean_data = avocado.groupby('region')['AveragePrice'].agg(
     lambda group: pd.DataFrame(group.resample('90D').mean()))
 
 fig, ax = plt.subplots()
-mean_data.map(lambda country: country.plot(ax=ax))
+mean_data.map(lambda country: country.plot(ax=ax, legend=False))
 plt.show()
 
 plt.figure()

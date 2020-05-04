@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from geopy import distance
-from shapely.geometry import MultiPoint, Point
+from shapely.geometry import MultiPoint, Point, Polygon
 
 EARTH_RADIUS_KM = distance.EARTH_RADIUS
 WGS84_DEGREE = "EPSG:4326"  # units: degree
@@ -44,6 +44,7 @@ def plot_map(mean_latitude=31.0461, mean_longitude=34.8516,
     # (latitude, longitude)
     radius_km = radius_meters / 10 ** 3
     mean_location = mean_latitude, mean_longitude
+    # Point receive: (longitude,latitude)
     circle_search = gpd.GeoSeries(Point(mean_location[-1::-1]), crs=WGS84_DEGREE)
     circle_search_meters = circle_search.to_crs(crs=WGS84_METER_SPHERE).buffer(radius_meters)
     circle_search = circle_search_meters.to_crs(crs=WGS84_DEGREE)
@@ -56,6 +57,8 @@ def plot_map(mean_latitude=31.0461, mean_longitude=34.8516,
         # do not pass zero
         geo_data_filtered = geo_data_filtered[
             geo_data_filtered.longitude.between(min_max_lon_lat[0], min_max_lon_lat[2])]
+    # Otherwise, the search region can be for e.g. case 1: [-10,10] or case 2: ([-180,-170] and [170,180])
+    # Therefore do not do anything
     # reset index
     geo_data_filtered.reset_index(drop=True, inplace=True)
 
@@ -95,13 +98,15 @@ def plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
 
     x_val = np.array([point.x for point in geo_data_meter.geometry])
     y_val = np.array([point.y for point in geo_data_meter.geometry])
-    distance_azimuth = np.abs(np.arctan2(y_val - yc,x_val - xc) - azimuth * np.pi / 180) * 180 / np.pi
+    distance_azimuth = np.abs(np.arctan2(y_val - yc, x_val - xc) - azimuth * np.pi / 180) * 180 / np.pi
     geo_data_meter = geo_data_meter[distance_azimuth < aperture]
-    plot_locations(mean_location, circle_search, geo_data_meter, print_by_matplotlib, is_open_map, azimuth, aperture)
+    plot_locations(mean_location, circle_search, geo_data_meter, print_by_matplotlib, is_open_map, azimuth=azimuth,
+                   aperture=aperture,
+                   radius_meters=radius_meters)
 
 
 def plot_locations(mean_location, circle_search, geo_data, print_by_matplotlib, is_open_map, azimuth=None,
-                   aperture=None, radius=None):
+                   aperture=None, radius_meters=None):
     """plot locations"""
     mean_latitude, mean_longitude = mean_location
     if geo_data.empty:
@@ -130,14 +135,18 @@ def plot_locations(mean_location, circle_search, geo_data, print_by_matplotlib, 
         circle_search.plot(ax=ax, facecolor='none', edgecolor='k')
         plt.title(f"polygon: {polygon_area / 10 ** 6} $(km)^2$\n {countries}")
         if azimuth:
+            circle_search = circle_search.to_crs(crs=WGS84_METER_SPHERE)
             center = circle_search.centroid
             xc, yc = float(center.x), float(center.y)
-            angle = np.pi * (azimuth - aperture) / 180
-            radius = circle_search.to_crs(WGS84_DEGREE).bounds.values[0]
-            radius = (radius[2] - radius[0]) / 2
-            plt.plot([xc, xc + radius * np.cos(angle)], [yc, yc + radius * np.sin(angle)])
-            angle = np.pi * (azimuth + aperture) / 180
-            plt.plot([xc, xc + radius * np.cos(angle)], [yc, yc + radius * np.sin(angle)])
+            angles = np.pi * (azimuth - aperture) / 180, np.pi * (azimuth + aperture) / 180
+            zero = np.zeros((1,))
+            theta = np.linspace(angles[0], angles[1], 100)
+            x_values = xc + np.concatenate((zero, radius_meters * np.cos(theta), zero))
+            y_values = yc + np.concatenate((zero, radius_meters * np.sin(theta), zero))
+            arc = gpd.GeoSeries(Polygon([Point(x, y) for x, y in zip(x_values, y_values)]),
+                                crs=WGS84_METER_SPHERE).to_crs(
+                crs=WGS84_DEGREE)
+            arc.plot(ax=ax, facecolor='none', edgecolor='b', linestyle='--')
             plt.xlabel('longitude')
             plt.ylabel('latitude')
         try:
@@ -158,15 +167,15 @@ def plot_locations(mean_location, circle_search, geo_data, print_by_matplotlib, 
 
 
 plot_map_azimuth_aperture()
-
+#
 plot_map(radius_meters=7 * 10 ** 4, print_by_matplotlib=True)
-plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
-                          azimuth=10, aperture=30, radius_meters=7 * 10 ** 3, print_by_matplotlib=True)
-# israel:
-# lat: 31.0461° N, lon: 34.8516°E
-# 36 UTM
-plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
-                          azimuth=10, aperture=10, radius_meters=7 * 10 ** 4, print_by_matplotlib=True)
-
-# country on the board:
+# plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
+#                           azimuth=10, aperture=30, radius_meters=7 * 10 ** 3, print_by_matplotlib=True)
+# # israel:
+# # lat: 31.0461° N, lon: 34.8516°E
+# # 36 UTM
+plot_map_azimuth_aperture(mean_latitude=31.046, mean_longitude=34.851,
+                          azimuth=90, aperture=10, radius_meters=7 * 10 ** 4, print_by_matplotlib=True)
+#
+# # country on the board:
 plot_map(mean_longitude=35.7860, mean_latitude=33.3058, radius_meters=7 * 10 ** 3)
