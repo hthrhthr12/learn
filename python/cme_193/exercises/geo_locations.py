@@ -31,11 +31,12 @@ WGS84_METER_ELLIPSE = "EPSG:3395"  # units: m, World Mercator
 WGS84_METER_SPHERE = 3857
 
 data = pd.read_csv('geonames-database\geonames.csv', usecols=['latitude', 'longitude', 'country code'])
+data.dropna(axis=0, how='any', inplace=True)
 
 
 def plot_map(mean_latitude=31.0461, mean_longitude=34.8516,
              radius_meters=7 * 10 ** 3, print_by_matplotlib=True, is_open_map=False, only_filter=False,
-             geodesic_distance=False):
+             geodesic_distance=True):
     """
     plot on a map places in a specific radius
     assuming the longitude is not close to zeros lines
@@ -130,15 +131,18 @@ def plot_locations(mean_location, circle_search, geo_data, print_by_matplotlib, 
         polygon.plot(ax=ax, facecolor='none', edgecolor='k')
         circle_search.plot(ax=ax, facecolor='none', edgecolor='k')
         plt.title(f"polygon: {polygon_area / 10 ** 6} $(km)^2$\n {countries}")
-        ctx.add_basemap(ax)
-
+        try:
+            ctx.add_basemap(ax)
+        except ConnectionError:
+            print("There is no internet connection, so you haven't map:(")
+        plt.show()
     else:
         # print by folium
-        m = folium.Map([mean_latitude, mean_longitude], zoom_start=5)
+        m = folium.Map([mean_latitude, mean_longitude])
         folium.GeoJson(polygon).add_to(m)
         folium.GeoJson(geo_data).add_to(m)
+        folium.GeoJson(circle_search).add_to(m)
         folium.LatLngPopup().add_to(m)
-        m.render()
         m.save('map.html')
         if is_open_map:
             os.system('map.html')
@@ -153,7 +157,8 @@ plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
 # israel:
 # lat: 31.0461° N, lon: 34.8516°E
 # 36 UTM
-
+plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
+                          azimuth=10, aperture=30000, radius_meters=7 * 10 ** 4, print_by_matplotlib=True)
 
 # country on the board:
 plot_map(mean_longitude=35.7860, mean_latitude=33.3058, radius_meters=7 * 10 ** 3)
