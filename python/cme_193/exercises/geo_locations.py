@@ -82,7 +82,7 @@ def plot_map(mean_latitude=31.0461, mean_longitude=34.8516,
 
 
 def plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
-                              azimuth=10, aperture=30000, radius_meters=7 * 10 ** 3, print_by_matplotlib=True,
+                              azimuth=10, aperture=20, radius_meters=7 * 10 ** 3, print_by_matplotlib=True,
                               is_open_map=False):
     """plot on a map places in a specific radius
     assuming the longitude is not close to zeros lines
@@ -93,20 +93,15 @@ def plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
     center = circle_search.centroid
     xc, yc = float(center.x), float(center.y)
 
-    # azimuth<45 degrees
-    tan_over_1 = 1 / np.tan(azimuth * np.pi / 180)
-    d_times_sqrt = aperture * np.sqrt(tan_over_1 ** 2 + 1)
-    m1 = d_times_sqrt + xc * tan_over_1 + yc
-    m2 = -d_times_sqrt + xc * tan_over_1 + yc
-    shift_max, shift_min = max(m1, m2), min(m1, m2)
     x_val = np.array([point.x for point in geo_data_meter.geometry])
     y_val = np.array([point.y for point in geo_data_meter.geometry])
-    data_line = y_val + tan_over_1 * x_val
-    geo_data_meter = geo_data_meter[(data_line >= shift_min) & (data_line <= shift_max)]
-    plot_locations(mean_location, circle_search, geo_data_meter, print_by_matplotlib, is_open_map)
+    distance_azimuth = np.abs(np.arctan2(y_val - yc,x_val - xc) - azimuth * np.pi / 180) * 180 / np.pi
+    geo_data_meter = geo_data_meter[distance_azimuth < aperture]
+    plot_locations(mean_location, circle_search, geo_data_meter, print_by_matplotlib, is_open_map, azimuth, aperture)
 
 
-def plot_locations(mean_location, circle_search, geo_data, print_by_matplotlib, is_open_map):
+def plot_locations(mean_location, circle_search, geo_data, print_by_matplotlib, is_open_map, azimuth=None,
+                   aperture=None, radius=None):
     """plot locations"""
     mean_latitude, mean_longitude = mean_location
     if geo_data.empty:
@@ -127,15 +122,29 @@ def plot_locations(mean_location, circle_search, geo_data, print_by_matplotlib, 
     print(f"area of polygon in m^2: {polygon_area}")
 
     if print_by_matplotlib:
+        geo_data = geo_data.to_crs(crs=WGS84_DEGREE)
+        polygon = polygon.to_crs(crs=WGS84_DEGREE)
+        circle_search = circle_search.to_crs(crs=WGS84_DEGREE)
         ax = geo_data.plot(marker='*', color='red', markersize=12)
         polygon.plot(ax=ax, facecolor='none', edgecolor='k')
         circle_search.plot(ax=ax, facecolor='none', edgecolor='k')
         plt.title(f"polygon: {polygon_area / 10 ** 6} $(km)^2$\n {countries}")
+        if azimuth:
+            center = circle_search.centroid
+            xc, yc = float(center.x), float(center.y)
+            angle = np.pi * (azimuth - aperture) / 180
+            radius = circle_search.to_crs(WGS84_DEGREE).bounds.values[0]
+            radius = (radius[2] - radius[0]) / 2
+            plt.plot([xc, xc + radius * np.cos(angle)], [yc, yc + radius * np.sin(angle)])
+            angle = np.pi * (azimuth + aperture) / 180
+            plt.plot([xc, xc + radius * np.cos(angle)], [yc, yc + radius * np.sin(angle)])
+            plt.xlabel('longitude')
+            plt.ylabel('latitude')
         try:
-            ctx.add_basemap(ax)
+            ctx.add_basemap(ax, crs=WGS84_DEGREE)
         except ConnectionError:
             print("There is no internet connection, so you haven't map:(")
-        plt.show()
+            plt.show()
     else:
         # print by folium
         m = folium.Map([mean_latitude, mean_longitude])
@@ -152,12 +161,12 @@ plot_map_azimuth_aperture()
 
 plot_map(radius_meters=7 * 10 ** 4, print_by_matplotlib=True)
 plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
-                          azimuth=10, aperture=30000, radius_meters=7 * 10 ** 3, print_by_matplotlib=True)
+                          azimuth=10, aperture=30, radius_meters=7 * 10 ** 3, print_by_matplotlib=True)
 # israel:
 # lat: 31.0461° N, lon: 34.8516°E
 # 36 UTM
 plot_map_azimuth_aperture(mean_latitude=31.0461, mean_longitude=34.8516,
-                          azimuth=10, aperture=30000, radius_meters=7 * 10 ** 4, print_by_matplotlib=True)
+                          azimuth=10, aperture=10, radius_meters=7 * 10 ** 4, print_by_matplotlib=True)
 
 # country on the board:
 plot_map(mean_longitude=35.7860, mean_latitude=33.3058, radius_meters=7 * 10 ** 3)
