@@ -19,12 +19,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from geopy import distance
-from shapely.geometry import MultiPoint
+from shapely.geometry import MultiPoint, Point
 
 data = pd.read_csv('geonames-database\geonames.csv', usecols=['latitude', 'longitude', 'country code'])
 EARTH_RADIUS_KM = distance.EARTH_RADIUS
 WGS84_DEGREE = "EPSG:4326"  # units: degree
-WGS84_METER = "EPSG:3395"  # units: m, World Mercator
+# EPSG:3395 uses the elliptical version of the Marcator projection
+WGS84_METER_ELLIPSE = "EPSG:3395"  # units: m, World Mercator
+# EPSG:3857 (Pseudo Mercator) use globe with the same radius
+# for the semi major and minor axis
+# WGS 84 / Pseudo-Mercator -- Spherical Mercator
+WGS84_METER_SPHERE = 3857
 
 
 def plot_map(mean_latitude=31.0461, mean_longitude=34.8516,
@@ -106,19 +111,23 @@ def plot_lat_lon_limits(mean_longitude=31.0461, mean_latitude=34.8516, lon_bound
                                 geometry=gpd.points_from_xy(data_filtered['longitude'], data_filtered['latitude']))
     convex_hull = MultiPoint([point for point in geo_data['geometry']]).convex_hull
     polygon = gpd.GeoDataFrame(index=[0], crs=WGS84_DEGREE, geometry=[convex_hull])
-    print(data_filtered["country code"].unique())
-    polygon_area = polygon.to_crs(WGS84_METER).area[0]
+    countries = data_filtered["country code"].unique()
+    print(countries)
+    polygon_area = polygon.to_crs(WGS84_METER_ELLIPSE).area[0]
     print(f"area of polygon in m^2: {polygon_area}")
 
     if print_by_matplotlib:
-        geo_data = geo_data.to_crs(epsg=3857)
-        polygon = polygon.to_crs(epsg=3857)
+        circle_search = gpd.GeoSeries(Point(mean_location[-1::-1]), crs=WGS84_DEGREE)
+
+        circle_search = circle_search.to_crs(crs=WGS84_METER_SPHERE).buffer(radius_meters)
+        geo_data = geo_data.to_crs(crs=WGS84_METER_SPHERE)
+        polygon = polygon.to_crs(crs=WGS84_METER_SPHERE)
+
         ax = geo_data.plot(marker='*', color='red', markersize=12)
-        # ax.set_xbound(lon_bounds[0], lon_bounds[1])
-        # ax.set_ybound(lat_bounds[0], lat_bounds[1])
         polygon.plot(ax=ax, facecolor='none', edgecolor='k')
-        plt.title(f"area of polygon: {polygon_area}")
-        ctx.add_basemap(ax, zoom=12)
+        circle_search.plot(ax=ax, facecolor='none', edgecolor='k')
+        plt.title(f"polygon: {polygon_area / 10 ** 6} $(km)^2$\n {countries}")
+        ctx.add_basemap(ax)
 
     else:
         # print by folium
@@ -145,3 +154,12 @@ plot_map(print_by_matplotlib=True)
 # israel:
 # 31.0461° N, 34.8516°E
 # 36 UTM
+
+
+# country on the board:
+plot_map(mean_longitude=35.7860, mean_latitude=33.3058, radius_meters=7 * 10 ** 5)
+
+
+
+# circle_search.buffer(11)
+# create polygon
