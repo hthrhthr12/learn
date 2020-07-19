@@ -6,8 +6,6 @@ fig.WindowButtonDownFcn=@input_line;
 fig.WindowButtonUpFcn=@plot_line;
 
 
-ui_element=add_ui(fig,[0.892,0.78281,0.076041,0.05021],'Edit');
-ui_element.FontSize=0.2836;
 %click_points(fig,true,...
 %    @(fig,event)draw_path(fig,event,'end_function',@emitter_input),...
 %   {'wait two seconds ,','draw a path, right click for ending'});

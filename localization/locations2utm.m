@@ -1,16 +1,24 @@
 function locations2utm(fig)
+addpath('C:\Users\eliezer\Downloads\Geodetic_Transformations_Toolbox\GeodeticToolbox');
+
 % retrieve locations of platforms and emitters and transform to UTM
 platforms=find_tags_prefix(fig,'line');
 emitters=find_tags_prefix(fig,'emitter');
 num_platforms=length(platforms);
 fig.UserData.num_platforms=num_platforms;
 
-[emitters_UTM,~] = geotrans2_other_func([[emitters.XData]',[emitters.YData]'],...
-    'WGS84','GEO',0,'WGS84','UTM',36); % 36 is the zone in UTM
-fig.UserData.emitters_UTM=emitters_UTM;
+% (longitude, latitude)
+zone=[]; %36;
+[~,fig.UserData.emitters_UTM]=ell2utm([[emitters.XData]',[emitters.YData]'],'wgs84',[],zone,[],[]);
+% [fig.UserData.emitters_UTM,~] = geotrans2_other_func([[emitters.XData]',[emitters.YData]'],...
+%     'WGS84','GEO',0,'WGS84','UTM',36); % 36 is the zone in UTM
 
-[platforms_UTM,~] = geotrans2_other_func([[platforms.XData]',[platforms.YData]'],...
-    'WGS84','GEO',0,'WGS84','UTM',36); % 36 is the zone in UTM
+
+
+[~,platforms_UTM]=ell2utm([[platforms.XData]',[platforms.YData]'],'wgs84',[],zone,[],[]);
+
+% [platforms_UTM,~] = geotrans2_other_func([[platforms.XData]',[platforms.YData]'],...
+%     'WGS84','GEO',0,'WGS84','UTM',36); % 36 is the zone in UTM
 fig.UserData.platforms_UTM=platforms_UTM;
 
 % the array platforms_len contains the location of the data of each
@@ -36,8 +44,9 @@ for i_emit=1:fig.UserData.num_platforms
 end
 fig.UserData.platforms_distances=platforms_distances;
 
-[fig.UserData.R_0,~] = geotrans2_other_func([mean(fig.CurrentAxes.XLim),...
-    mean(fig.CurrentAxes.YLim)],...
-    'WGS84','GEO',0,'WGS84','UTM',36);
+% [fig.UserData.R_0,~] = geotrans2_other_func([mean(fig.CurrentAxes.XLim),...
+%     mean(fig.CurrentAxes.YLim)],...
+%     'WGS84','GEO',0,'WGS84','UTM',36);
+[~,fig.UserData.R_0]=ell2utm([mean(fig.CurrentAxes.XLim),mean(fig.CurrentAxes.YLim)],'wgs84',[],zone,[],[]);
 
 end

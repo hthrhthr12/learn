@@ -13,8 +13,11 @@ ones_N=ones(num_grid,1);
 xygrid=[kron(xgrid,ones_N),kron(ones_N,ygrid)];
 % convert from GEO to UTM
 
-[fig.UserData.xygrid,~] = geotrans2_other_function(xygrid,...
-    'WGS84','GEO',0,'WGS84','UTM',36); % 36 is the zone in UTM
+% (longitude, latitude)
+zone=[]; %36;
+[~,fig.UserData.xygrid]=ell2utm(xygrid,'wgs84',[],zone,[],[]);
+% [fig.UserData.xygrid,~] = geotrans2_other_function(xygrid,...
+%     'WGS84','GEO',0,'WGS84','UTM',36); % 36 is the zone in UTM
 fig.UserData.xgrid=xgrid;
 fig.UserData.ygrid=ygrid;
 end

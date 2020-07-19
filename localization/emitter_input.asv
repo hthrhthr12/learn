@@ -17,9 +17,12 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         % start get frequencies
         set(fig,'WindowButtonDownFcn',@(~,~)[])
         sample_rate=add_ui(fig,[0.892,0.78281,0.076041,0.05021],'Edit');
-       sample_rate.Tag='sample_rate';
+        sample_rate.FontSize=0.2836;
+        sample_rate.Tag='sample_rate';
         
-        f0=add_ui(fig,[0.8920,0.7075,0.0760,0.0502],'Edit');            
+        f0=add_ui(fig,[0.8920,0.7075,0.0760,0.0502],'Edit');
+        f0.FontSize=0.2836;
+
         f0.Tag='f0';
         
         text_x='f0: 100MHz';
@@ -37,22 +40,22 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
             plot(fig.CurrentAxes,mean(fig.CurrentAxes.XLim),...
                 mean(fig.CurrentAxes.YLim),'rx','Tag','emitter_1');
         end
-        sample_times_box=add_ui(fig,[0.8920,0.5569,0.0760,0.0502],'edit');
+        sample_times_box=add_ui(fig,[0.8920,0.6322,0.0760,0.0502],'pushbutton');
         
+        sample_times_box=add_uicontrol(fig,0.58231,[0.8776,0.4541,0.07552,0.04371]);
         sample_times_box.String=sample_times;
         sample_times_box.Tag='num_samples';
-        
-        velocity_units=add_ui(fig,[0.8920,0.4816,0.0760,0.0502],'popupmenu');
-        velocity_units.String={'km/h','m/h'};
+        velocity_units=add_uicontrol(fig,0.58231,...
+            [0.8786,0.3592,0.07552,0.0437],'style','popupmenu','String',{'km/h','m/h'});
         velocity_units.Tag='velocity_units';
         
-        show_gradients=add_ui(fig,[0.8920,0.4063,0.0760,0.0502],'pushbutton');
-        
+        show_gradients=add_uicontrol(fig,0.58231,...
+            [0.8479,0.5606,0.1255,0.0437],'style','pushbutton');
         show_gradients.String='DDOP gradient';
         show_gradients.Callback=@display_gradients;
         %%
-        sample_rate.String=text_x;
-        f0.String=text_y;
+        input_x.String=text_x;
+        input_y.String=text_y;
         fig.UserData.text_x=text_x;
         fig.UserData.text_y=text_y;
         
@@ -63,15 +66,17 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         set(fig.findobj('Tag','done_add'),...
             {'String','Callback','Visible'},{'Done',...
             @calculate_DDOP_TDOA,'on'})
-        velocity=add_ui(fig,[0.8920,0.4816,0.0760,0.0502],'edit');
-        velocity.String='velocity: 500';
+        velocity=add_uicontrol(fig,0.58231,...
+            [0.8786,0.2792,0.07552,0.0437],'style','edit','String'...
+            ,'velocity: 500');        
         velocity.Tag='velocity';
-        
-        TDOA_noise=add_ui(fig,[0.8920,0.4816,0.0760,0.0502],'edit');
-        TDOA_noise.String='TDOA std: 1e-6 sec';
+
+        TDOA_noise=add_uicontrol(fig,0.58231,...
+            [0.8786,0.1992,0.07552,0.0437],'style','edit','String'...
+            ,'TDOA std: 1e-6 sec');
         TDOA_noise.Tag='TDOA_noise';
         locations2utm(fig);
-        fig.UserData.c=physconst('LightSpeed');
-        fig.UserData.display_DDOP=0;
+fig.UserData.c=physconst('LightSpeed');
+fig.UserData.display_DDOP=0;
     end
 end
