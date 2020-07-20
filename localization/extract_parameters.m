@@ -21,7 +21,7 @@ fig.UserData.sample_rate=sample_rate;
 %% noises
 fig.UserData.TDOA_noise=extract_element(fig,'TDOA_noise',1e-6);
 
-fig.UserData.DDOP_noise=extract_element(fig,'DDOP_noise',1e-6);
+fig.UserData.DDOP_noise=extract_element(fig,'DDOP_noise',1);
 %% extract velocity 
 velocity_units=fig.findobj('Tag','velocity_units').Value;
 

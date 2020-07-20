@@ -19,7 +19,7 @@ disp(['num samples in path: ',num2str(num_samples)])
 path_from_start=(linspace(0,cum_path(end),num_samples)).';
 locations=zeros(num_samples,2);
 velocities=zeros(num_samples,2);
-platforms_UTM=fig.UserData.platforms_UTM;
+platforms_UTM=fig.UserData.platforms_UTM(start:stop,:);
 % we have small number of platforms_UTM data and large number of
 % measurements, hence we use interpolation.
 
@@ -41,6 +41,7 @@ for seg=1:stop-start
     velocities(seg_indices(1):seg_indices(2),:)=...
         kron(ones(diff(seg_indices)+1,1),velocity);
     seg_indices(1)=seg_indices(2)+1;
+    %start the next segment after the last one
     until_now_distance=cum_path(seg);
 end
 

@@ -6,6 +6,9 @@ G_sums(2)=P_hat_inv(2,2);
 G_sums(3)=P_hat_inv(1,2);
 
 G_sums(4:5)=det(P_hat_inv)...
-    *([-G_sums(2),G_sums(3);G_sums(3),-G_sums(1)])\R_hat;
-
+    *(([-G_sums(2),G_sums(3);G_sums(3),-G_sums(1)])\R_hat);
+% pay attention that we need parantheses, since:
+% c*A\b
+% is different than
+% c*(A\b)
 end
