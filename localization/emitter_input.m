@@ -18,9 +18,9 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         % start get frequencies
         set(fig,'WindowButtonDownFcn',@(~,~)[])
         sample_rate=add_ui(fig,[0.892,0.78281,0.076041,0.05021],'Edit');
-       sample_rate.Tag='sample_rate';
+        sample_rate.Tag='sample_rate';
         
-        f0=add_ui(fig,[0.8920,0.7075,0.0760,0.0502],'Edit');            
+        f0=add_ui(fig,[0.8920,0.7075,0.0760,0.0502],'Edit');
         f0.Tag='f0';
         
         text_x='f0: 100MHz';
@@ -78,10 +78,15 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         DDOP_noise.Tag='DDOP_noise';
         
         %% initial_point
-         initial_point=add_ui(fig,[0.8920,0.1051,0.0760,0.0502],'popupmenu');
-        initial_point.String={'true','middle'};
+        initial_point=add_ui(fig,[0.8920,0.1051,0.0760,0.0502],'popupmenu');
+        initial_point.String={'true','middle','random'};
         initial_point.Tag='initial_point';
-       %%
+        %%
+        initial_point_noise=add_ui(fig,[0.8920,0.0298,0.0760,0.0502],'edit');
+        initial_point_noise.String='1m std from true emitter for each axis';
+        initial_point_noise.Tag='initial_point_noise';
+        
+        %%
         locations2utm(fig);
         fig.UserData.c=physconst('LightSpeed');
         fig.UserData.display_DDOP=0;

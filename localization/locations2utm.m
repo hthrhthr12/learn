@@ -46,9 +46,5 @@ for i_emit=1:fig.UserData.num_platforms
 end
 fig.UserData.platforms_distances=platforms_distances;
 
-% [fig.UserData.R_0,~] = geotrans2_other_func([mean(fig.CurrentAxes.XLim),...
-%     mean(fig.CurrentAxes.YLim)],...
-%     'WGS84','GEO',0,'WGS84','UTM',36);
-[~,fig.UserData.R_0]=ell2utm([mean(fig.CurrentAxes.XLim),mean(fig.CurrentAxes.YLim)],'wgs84',[],zone,[],[]);
 
 end

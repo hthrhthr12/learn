@@ -1,25 +1,11 @@
 function extract_parameters(fig)
 % extract parameters from fig 
 
-f0=str2double(fig.findobj('Tag','f0').String);
-if isnan(f0)
-    f0=10^8;% MHz
-end
-fig.UserData.f0=f0;% f0 units are Hz
+fig.UserData.f0=extract_element(fig,'f0',10^8); % MHz
+
 fig.UserData.use_num_samples=true;
 
-num_samples=str2double(fig.findobj('Tag','num_samples').String);
-if isnan(num_samples)
-    num_samples=12*10^3;% 12k
-end
-fig.UserData.num_samples=num_samples;
-%%
-TDOA_noise=str2double(fig.findobj('Tag','TDOA_noise').String);
-if isnan(TDOA_noise) % TDOA_noise units are seconds
-    TDOA_noise=1e-6;
-end
-
-fig.UserData.TDOA_noise=TDOA_noise;
+fig.UserData.num_samples=extract_element(fig,'num_samples',12*10^3); %12k
 
 %%
 sample_rate=str2double(fig.findobj('Tag','sample_rate').String);
@@ -32,6 +18,11 @@ end
 
 fig.UserData.sample_rate=sample_rate;
 
+%% noises
+fig.UserData.TDOA_noise=extract_element(fig,'TDOA_noise',1e-6);
+
+fig.UserData.DDOP_noise=extract_element(fig,'DDOP_noise',1e-6);
+%% extract velocity 
 velocity_units=fig.findobj('Tag','velocity_units').Value;
 
 velocity=str2double(fig.findobj('Tag','velocity').String);
@@ -45,7 +36,27 @@ end
 % the value 3.6 transform from km/h to m/s
 fig.UserData.velocity=3.6*velocity;
 
-% extract locations and velocities at receiving places
+%% extract R0
+initial_point=fig.findobj('Tag','initial_point').Value;
+switch initial_point
+    case 1
+        %true 
+        R0=fig.UserData.emitters_UTM;
+    case 2
+        % middle
+        [~,R0]=ell2utm([mean(fig.CurrentAxes.XLim),mean(fig.CurrentAxes.YLim)],'wgs84',[],36,[],[]);
+    otherwise
+        %random
+        initial_point_noise=extract_element(fig,'initial_point_noise',1); % 1m
+        R0=fig.UserData.emitters_UTM+initial_point_noise*randn(1,2);
+end
+
+
+% [fig.UserData.R_0,~] = geotrans2_other_func(R0,...
+%     'WGS84','GEO',0,'WGS84','UTM',36);
+fig.UserData.R_0=R0;
+
+%% extract locations and velocities at receiving places
 fig.UserData.locations=cell(1,fig.UserData.num_platforms);
 fig.UserData.velocities=cell(1,fig.UserData.num_platforms);
 
