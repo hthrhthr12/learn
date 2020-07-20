@@ -1,4 +1,4 @@
-function ELL=utm2ell(PRO,ell,UND,UseMGRSold,FileOut)
+function ELL=utm2ell(PRO,ell,UND,UseMGRSold,FileOut,zone)
 
 % UTM2ELL performs transformation from a utm mapping projection to ellipsoidal coordinates
 %
@@ -12,12 +12,12 @@ function ELL=utm2ell(PRO,ell,UND,UseMGRSold,FileOut)
 %               PRO may also be a file name with ASCII data to be processed. No point IDs, only UTM
 %               coordinates with possible height separated by blanks.
 %
-%               Possible formats are:  
+%               Possible formats are:
 %                    grid    32U460000.123 5498765.123   arbitrary digits  (string) or
 %                            32U 460000.123 5498765.123  arbitrary digits  (string)
 %                   mgrsX    32UMV6000098765                    no digits  (string)
 %                mgrsXold    32UMF6000098765                    no digits  (string)
-%                            X is the number of MGRS integer places (0-5) 
+%                            X is the number of MGRS integer places (0-5)
 %
 %                The appropriate format is detected automatically, except mgrsXold.
 %                This will only be used when UseMGRSold is set to a value other than 0.
@@ -25,7 +25,7 @@ function ELL=utm2ell(PRO,ell,UND,UseMGRSold,FileOut)
 %
 %          ell  the underlying ellipsoid as string in lower case letters
 %               Standard if omitted or set to [] is 'grs80'.
-%               See Ellipsoids.m for details.                 
+%               See Ellipsoids.m for details.
 %
 %          UND  undulation values from geoid model to calculate projected height from ellipsoidal height.
 %               If omitted or set to [], no correction is done on the height in ELL.
@@ -89,7 +89,7 @@ if ischar(PRO)
         end
         temp=strtrim(Coo{i}(letters(end)+1:end));
         spac=findstr(temp,' ');
-        if length(spac)>=tpos,
+        if length(spac)>=tpos
             PRO{i,1}=[Coo{i}(1:letters(end)) strtrim(temp(1:spac(tpos)))];
             PRO{i,2}=str2num(temp(spac(tpos)+1:end));
         else
@@ -98,26 +98,27 @@ if ischar(PRO)
     end
 end
 
-% Check input size
+%% Check input size
 if ~any(ismember(size(PRO),[1 2]))
     error('Coordinate list PRO must be nx1 or nx2 when being a cell array!')
 elseif (ismember(size(PRO,1),[1 2]))&&(~ismember(size(PRO,2),[1 2]))
     PRO=PRO';
 end
 
-% Check input format and search for letters in UTM strings
-letters=and(double(PRO{1,1})>=65,double(PRO{1,1})<=91);
-woletters=find(letters);
-if sum(letters)==1
-    format='grid';
-elseif sum(letters)==3
-    format='mgrs';
-    places=(length(PRO{1,1})-woletters(end))/2;
-    format=[format,num2str(places)];
-else
-    error('Format description of cell array is not valid (1 or 3 letters needed)!')
+%% Check input format and search for letters in UTM strings
+if iscell(PRO)
+    letters=and(double(PRO{1,1})>=65,double(PRO{1,1})<=91);
+    woletters=find(letters);
+    if sum(letters)==1
+        format='grid';
+    elseif sum(letters)==3
+        format='mgrs';
+        places=(length(PRO{1,1})-woletters(end))/2;
+        format=[format,num2str(places)];
+    else
+        error('Format description of cell array is not valid (1 or 3 letters needed)!')
+    end
 end
-
 % Allocate variables
 nct=size(PRO,1);  % Number of coordinates to transform
 if size(PRO,2)==1
@@ -127,7 +128,9 @@ else
 end
 ID=zeros(size(PRO,1),2);
 L0=zeros(size(PRO,1),1);
-
+if nargout==6
+    ID(:,1)=zone;
+end
 % Default settings
 if nargin<5
     FileOut=[];
@@ -154,85 +157,88 @@ end
 eval(['ell=',ell,';']);
 
 %% Undo the formatting
-switch format(1:4)
-    case 'grid'
-        for i=1:nct
-            letters=find(and(double(PRO{i,1})>=65,double(PRO{i,1})<=91));
-            if ~any(ismember(letters,[1 2 3]))
-                error(['Input value #',num2str(i),'is not in grid format.']);
-            end
-            ThisID=str2num(PRO{i,1}(1:letters(1)-1));
-            if (isempty(ThisID))||(ThisID==0)
-                ID(i,1)=0;    % Polar region
-                L0=0;
-            else
-                ID(i,1)=ThisID;
-                L0(i)=ID(i,1)*6-183;
-            end
-            ID(i,2)=double(PRO{i,1}(letters(1)));
-            P(i,1:2)=str2num(PRO{i,1}(letters(1)+1:end));
-            if (ID(i,1)~=0) && (ID(i,2)<78) % southern hemisphere
-                P(i,2)=P(i,2)-1e7;
-            end
-            if size(PRO,2)==2
-                P(i,3)=PRO{i,2};
-            end
-        end
-    case 'mgrs'
-        easting_table=[65:72; 74:78 80:82; 83:90; -4e5:1e5:3e5];
-        pole_easting_table=[65:67 70:72 74:76 80:85 88:90; 0:1e5:17e5];
-        northing_zone=[67:72 74:78 80:88];
-        pole_northing_table=[65:72 74:78 80:90;-7e5:1e5:16e5;-12e5:1e5:11e5];
-        if (UseMGRSold==0)
-            northing_table=[65:72 74:78 80:86];
-        else
-            northing_table=[76:78 80:86 65:72 74:75];
-        end
-        for i=1:nct
-            letters=find(and(double(PRO{i,1})>=65,double(PRO{i,1})<=90));
-            if ~any(ismember(letters(1),[1 2 3]))||length(letters)~=3
-                error(['Input value #',num2str(i),'is not in mgrs format.']);
-            end
-            ThisID=str2num(PRO{i,1}(1:letters(1)-1));
-            if (isempty(ThisID))||(ThisID==0)
-                ID(i,1)=0;    % Polar region
-                L0=0;
-                ID(i,2)=double(PRO{i,1}(letters(1)));
-                Pshort=[str2num(PRO{i,1}(letters(3)+1:letters(3)+places)) str2num(PRO{i,1}(letters(3)+1+places:end))];
-                [woi,woj]=find(pole_easting_table==double(PRO{i,1}(letters(2))));
-                if any(double(PRO{i,1}(letters(1)))==[65 89])  % western
-                    P(i,1)=2e6+Pshort(1)*10^(5-places)+pole_easting_table(2,woj)-18e5;
+if iscell(PRO)
+    switch format(1:4)
+        case 'grid'
+            for i=1:nct
+                letters=find(and(double(PRO{i,1})>=65,double(PRO{i,1})<=91));
+                if ~any(ismember(letters,[1 2 3]))
+                    error(['Input value #',num2str(i),'is not in grid format.']);
+                end
+                ThisID=str2num(PRO{i,1}(1:letters(1)-1));
+                if (isempty(ThisID))||(ThisID==0)
+                    ID(i,1)=0;    % Polar region
+                    L0=0;
                 else
-                    P(i,1)=2e6+Pshort(1)*10^(5-places)+pole_easting_table(2,woj);
+                    ID(i,1)=ThisID;
+                    L0(i)=ID(i,1)*6-183;
                 end
-                [woi,woj]=find(pole_northing_table==double(PRO{i,1}(letters(3))));
-                if any(double(PRO{i,1}(letters(1)))==[65 66])  % south pole
-                    P(i,2)=2e6+Pshort(2)*10^(5-places)+pole_northing_table(3,woj);
-                else
-                    P(i,2)=2e6+Pshort(2)*10^(5-places)+pole_northing_table(2,woj);
-                end
-            else
-                ID(i,1)=ThisID;
-                L0(i)=ID(i,1)*6-183;
                 ID(i,2)=double(PRO{i,1}(letters(1)));
-                Pshort=[str2num(PRO{i,1}(letters(3)+1:letters(3)+places)) str2num(PRO{i,1}(letters(3)+1+places:end))];
-                [woi,woj]=find(easting_table==double(PRO{i,1}(letters(2))));
-                P(i,1)=5e5+easting_table(4,woj)+Pshort(1)*10^(5-places);
-                approx_north=885000*(find(northing_zone==ID(i,2))-10.5);
-                shortened_north=(find(northing_table==double(PRO{i,1}(letters(3))))-1)*1e5;
-                if mod(ID(i,1),2)==0    % even zone - starting with 'F'
-                    shortened_north=shortened_north-5e5;
+                P(i,1:2)=str2num(PRO{i,1}(letters(1)+1:end));
+                if (ID(i,1)~=0) && (ID(i,2)<78) % southern hemisphere
+                    P(i,2)=P(i,2)-1e7;
                 end
-                diffn=approx_north-shortened_north;
-                multn=round(diffn/2e6)*2e6;
-                P(i,2)=multn+shortened_north+Pshort(2)*10^(5-places);
+                if size(PRO,2)==2
+                    P(i,3)=PRO{i,2};
+                end
             end
-            if size(PRO,2)==2
-                P(i,3)=PRO{i,2};
+        case 'mgrs'
+            easting_table=[65:72; 74:78 80:82; 83:90; -4e5:1e5:3e5];
+            pole_easting_table=[65:67 70:72 74:76 80:85 88:90; 0:1e5:17e5];
+            northing_zone=[67:72 74:78 80:88];
+            pole_northing_table=[65:72 74:78 80:90;-7e5:1e5:16e5;-12e5:1e5:11e5];
+            if (UseMGRSold==0)
+                northing_table=[65:72 74:78 80:86];
+            else
+                northing_table=[76:78 80:86 65:72 74:75];
             end
-        end
+            for i=1:nct
+                letters=find(and(double(PRO{i,1})>=65,double(PRO{i,1})<=90));
+                if ~any(ismember(letters(1),[1 2 3]))||length(letters)~=3
+                    error(['Input value #',num2str(i),'is not in mgrs format.']);
+                end
+                ThisID=str2num(PRO{i,1}(1:letters(1)-1));
+                if (isempty(ThisID))||(ThisID==0)
+                    ID(i,1)=0;    % Polar region
+                    L0=0;
+                    ID(i,2)=double(PRO{i,1}(letters(1)));
+                    Pshort=[str2num(PRO{i,1}(letters(3)+1:letters(3)+places)) str2num(PRO{i,1}(letters(3)+1+places:end))];
+                    [woi,woj]=find(pole_easting_table==double(PRO{i,1}(letters(2))));
+                    if any(double(PRO{i,1}(letters(1)))==[65 89])  % western
+                        P(i,1)=2e6+Pshort(1)*10^(5-places)+pole_easting_table(2,woj)-18e5;
+                    else
+                        P(i,1)=2e6+Pshort(1)*10^(5-places)+pole_easting_table(2,woj);
+                    end
+                    [woi,woj]=find(pole_northing_table==double(PRO{i,1}(letters(3))));
+                    if any(double(PRO{i,1}(letters(1)))==[65 66])  % south pole
+                        P(i,2)=2e6+Pshort(2)*10^(5-places)+pole_northing_table(3,woj);
+                    else
+                        P(i,2)=2e6+Pshort(2)*10^(5-places)+pole_northing_table(2,woj);
+                    end
+                else
+                    ID(i,1)=ThisID;
+                    L0(i)=ID(i,1)*6-183;
+                    ID(i,2)=double(PRO{i,1}(letters(1)));
+                    Pshort=[str2num(PRO{i,1}(letters(3)+1:letters(3)+places)) str2num(PRO{i,1}(letters(3)+1+places:end))];
+                    [woi,woj]=find(easting_table==double(PRO{i,1}(letters(2))));
+                    P(i,1)=5e5+easting_table(4,woj)+Pshort(1)*10^(5-places);
+                    approx_north=885000*(find(northing_zone==ID(i,2))-10.5);
+                    shortened_north=(find(northing_table==double(PRO{i,1}(letters(3))))-1)*1e5;
+                    if mod(ID(i,1),2)==0    % even zone - starting with 'F'
+                        shortened_north=shortened_north-5e5;
+                    end
+                    diffn=approx_north-shortened_north;
+                    multn=round(diffn/2e6)*2e6;
+                    P(i,2)=multn+shortened_north+Pshort(2)*10^(5-places);
+                end
+                if size(PRO,2)==2
+                    P(i,3)=PRO{i,2};
+                end
+            end
+    end
+else
+    P=PRO;
 end
-
 %% Do the calculations
 
 ELL=zeros(size(P));
@@ -247,27 +253,27 @@ if any(ID(:,1)>0)
     y=P(ID(:,1)>0,1)-5e5;
     x=P(ID(:,1)>0,2);
     m0=0.9996;
-
+    
     n=(ell.a-ell.b)/(ell.a+ell.b);
     es2=(ell.a^2-ell.b^2)/ell.b^2;
-
+    
     B=(1+n)/ell.a/(1+n^2/4+n^4/64)*x/m0;
-
+    
     b1=3/2*n*(1-9/16*n^2)*sin(2*B);
     b2=n^2/16*(21-55/2*n^2)*sin(4*B);
     b3=151/96*n^3*sin(6*B);
     b4=1097/512*n^4*sin(8*B);
-
+    
     Bf=B+b1+b2+b3+b4;
-
+    
     % shortened Longitude:
     Vf=sqrt(1+es2*cos(Bf).^2);
     etaf=sqrt(es2*cos(Bf).^2);
-
+    
     ys=y*ell.b/m0/ell.a^2;
     l=atan(Vf./cos(Bf).*sinh(ys).*(1-etaf.^4.*ys.^2/6-es2.*ys.^4/10));
     ELL(ID(:,1)>0,1)=l*180/pi-183+ID(ID(:,1)>0,1)*6;
-
+    
     % Latitude:
     ELL(ID(:,1)>0,2)=atan(tan(Bf).*cos(Vf.*l).*(1-etaf.^2/6.*l.^4))*180/pi;
 end

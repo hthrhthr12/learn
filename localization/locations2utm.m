@@ -8,8 +8,10 @@ num_platforms=length(platforms);
 fig.UserData.num_platforms=num_platforms;
 
 % (longitude, latitude)
-zone=[]; %36;
+zone=[]; %[];
 [~,fig.UserData.emitters_UTM]=ell2utm([[emitters.XData]',[emitters.YData]'],'wgs84',[],zone,[],[]);
+
+
 % [fig.UserData.emitters_UTM,~] = geotrans2_other_func([[emitters.XData]',[emitters.YData]'],...
 %     'WGS84','GEO',0,'WGS84','UTM',36); % 36 is the zone in UTM
 

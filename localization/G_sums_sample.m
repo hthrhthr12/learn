@@ -19,10 +19,10 @@ b=(G_sums(2)-G_sums(3)*tan(theta))^(-0.5);
 xy=d*U_theta*[a*cos(phi);b*sin(phi)]+R_hat;
 %% check the matrix of eigen vectors
 % pay attention that eigs return only part of eigen vectors
-[U,~]=eig([G_sums(1),G_sums(3);G_sums(3),G_sums(2)]);
-
-disp(U);
-disp(U_theta);
+% [U,~]=eig([G_sums(1),G_sums(3);G_sums(3),G_sums(2)]);
+% they are the same up to sign
+% disp(U);
+% disp(U_theta);
 
 
 end
