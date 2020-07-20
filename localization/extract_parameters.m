@@ -73,9 +73,9 @@ for i_platform=1:fig.UserData.num_platforms
     % we create matrix of the whole data by ignoring the samples that are
     % not common to all the sensors
     locations((i_platform-1)*N+1:i_platform*N,:)=...
-        fig.UserData.locations{i_platform};
+        fig.UserData.locations{i_platform}(1:N,:);
     velocities((i_platform-1)*N+1:i_platform*N,:)=...
-        fig.UserData.velocities{i_platform};
+        fig.UserData.velocities{i_platform}(1:N,:);
     
 end
 fig.UserData.locations=locations;

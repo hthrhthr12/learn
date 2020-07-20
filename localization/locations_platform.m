@@ -27,6 +27,11 @@ until_now_distance=0;
 seg_indices=[1,1];
 for seg=1:stop-start
     index=find(path_from_start(seg_indices(1):end)<cum_path(seg),1,'last');
+    if isempty(index)
+        until_now_distance=cum_path(seg);
+        continue;
+        % if there is no measurement points in this segment continue
+    end
     seg_indices(2)=seg_indices(1)+index;
     % divide a segment by a known ratio
     paths_in_line=path_from_start(seg_indices(1):seg_indices(2))...
