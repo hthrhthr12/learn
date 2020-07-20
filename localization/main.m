@@ -7,6 +7,7 @@ axis(f.CurrentAxes,[32,35,36,38]);
 help_text=add_ui(f,[0.0566,0.9399,0.80729,0.03418],'text');
 help_text.FontSize=0.8;
 help_text.String='draw platforms paths, right click for finishing';
+help_text.Tag='help_text';
 f.UserData.help_text=help_text;
 hold on
 points_gui(f,0);

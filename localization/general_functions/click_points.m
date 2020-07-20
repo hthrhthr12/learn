@@ -1,4 +1,6 @@
 function click_points(fig)
+
+% input of mouse drawing
 fig.UserData.input=[];
 fig.UserData.num_lines=0;
 fig.WindowButtonDownFcn=@input_line;

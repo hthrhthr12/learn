@@ -5,5 +5,5 @@ p.addParameter('field','num_emitters');
 p.parse(varargin{:});
 [x,y]=inter2axes(fig,fig.CurrentPoint(1),fig.CurrentPoint(2));
 
-plot(fig.CurrentAxes,x,y,'rx');
+plot(fig.CurrentAxes,x,y,'rx','Tag',[p.Results.tag,num2str(fig.UserData.num_emitters)]);
 end
