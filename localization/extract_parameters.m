@@ -41,14 +41,14 @@ initial_point=fig.findobj('Tag','initial_point').Value;
 switch initial_point
     case 1
         %true 
-        R0=fig.UserData.emitters_UTM;
+        R0=fig.UserData.emitters_UTM(1,:);
     case 2
         % middle
         [~,R0]=ell2utm([mean(fig.CurrentAxes.XLim),mean(fig.CurrentAxes.YLim)],'wgs84',[],36,[],[]);
     otherwise
         %random
         initial_point_noise=extract_element(fig,'initial_point_noise',1); % 1m
-        R0=fig.UserData.emitters_UTM+initial_point_noise*randn(1,2);
+        R0=fig.UserData.emitters_UTM(1,:)+initial_point_noise*randn(1,2);
 end
 
 
