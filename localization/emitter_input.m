@@ -17,10 +17,10 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         create_UTM_grid(fig);
         % start get frequencies
         set(fig,'WindowButtonDownFcn',@(~,~)[])
-        sample_rate=add_ui(fig,[0.892,0.78281,0.076041,0.05021],'Edit');
+        [sample_rate,position]=add_ui(fig,[0.892,0.945,0.076041,0.05021],'Edit');
         sample_rate.Tag='sample_rate';
         
-        f0=add_ui(fig,[0.8920,0.7075,0.0760,0.0502],'Edit');
+        [f0,position]=add_ui(fig,position,'Edit');
         f0.Tag='f0';
         
         text_x='f0: 100MHz';
@@ -30,7 +30,7 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         fig.UserData.samples=12000;
         fig.UserData.sample_rate=12000;
         
-        done_add=add_ui(fig,[0.8920,0.6322,0.0760,0.0502],'pushbutton');
+        [done_add,position]=add_ui(fig,position,'pushbutton');
         done_add.Tag='done_add';
         
         %% if there is no any emitter, enter default
@@ -39,16 +39,16 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
             plot(fig.CurrentAxes,mean(fig.CurrentAxes.XLim),...
                 mean(fig.CurrentAxes.YLim),'rx','Tag','emitter_1');
         end
-        sample_times_box=add_ui(fig,[0.8920,0.5569,0.0760,0.0502],'edit');
+        [sample_times_box,position]=add_ui(fig,position,'edit');
         
         sample_times_box.String=sample_times;
         sample_times_box.Tag='num_samples';
         
-        velocity_units=add_ui(fig,[0.8920,0.4816,0.0760,0.0502],'popupmenu');
+        [velocity_units,position]=add_ui(fig,position,'popupmenu');
         velocity_units.String={'km/h','m/h'};
         velocity_units.Tag='velocity_units';
         
-        show_gradients=add_ui(fig,[0.8920,0.4063,0.0760,0.0502],'pushbutton');
+        [show_gradients,position]=add_ui(fig,position,'pushbutton');
         
         show_gradients.String='DDOP gradient';
         show_gradients.Callback=@display_gradients;
@@ -65,26 +65,45 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         set(fig.findobj('Tag','done_add'),...
             {'String','Callback','Visible'},{'Done',...
             @calculate_DDOP_TDOA,'on'})
-        velocity=add_ui(fig,[0.8920,0.3310,0.0760,0.0502],'edit');
+        [velocity,position]=add_ui(fig,position,'edit');
         velocity.String='velocity: 500';
         velocity.Tag='velocity';
         %%
-        TDOA_noise=add_ui(fig,[0.8920,0.2557,0.0760,0.0502],'edit');
+        [TDOA_noise,position]=add_ui(fig,position,'edit');
         TDOA_noise.String='TDOA std: 1e-6 sec';
         TDOA_noise.Tag='TDOA_noise';
         %%
-        DDOP_noise=add_ui(fig,[0.8920,0.1804,0.0760,0.0502],'edit');
+        [DDOP_noise,position]=add_ui(fig,position,'edit');
         DDOP_noise.String='DDOP std: 1 Hz';
         DDOP_noise.Tag='DDOP_noise';
         
         %% initial_point
-        initial_point=add_ui(fig,[0.8920,0.1051,0.0760,0.0502],'popupmenu');
+        [initial_point,position]=add_ui(fig,position,'popupmenu');
         initial_point.String={'true','middle','random'};
         initial_point.Tag='initial_point';
         %%
-        initial_point_noise=add_ui(fig,[0.8920,0.0298,0.0760,0.0502],'edit');
-        initial_point_noise.String='1m std from true emitter for each axis';
-        initial_point_noise.Tag='initial_point_noise';
+        [location_error,position]=add_ui(fig,position,'edit');
+        location_error.String='1m std platform location error';
+        location_error.Tag='location_error';
+        %%
+        [velocity_error,position]=add_ui(fig,position,'edit');
+        velocity_error.String='1m/s std platform velocity error';
+        velocity_error.Tag='velocity_error';
+        %%
+        [frequency_error,position]=add_ui(fig,position,'edit');
+        frequency_error.String='1Hz std central frequency error';
+        frequency_error.Tag='frequency_error';
+        %%
+        [~,position]=add_slider(fig,position,10,20,'(dB)','SNR');
+        [~,position]=add_slider(fig,position,1e8,2e8,'(Hz)','BW');
+        %%
+        [coherent_time,position]=add_ui(fig,position,'edit');
+        coherent_time.String='1e-6 sec std coherent time';
+        coherent_time.Tag='coherent_time';
+        %%
+        [beta_r,~]=add_ui(fig,position,'edit');
+        beta_r.String='1kHz beta_r';
+        beta_r.Tag='beta_r';
         
         %%
         locations2utm(fig);

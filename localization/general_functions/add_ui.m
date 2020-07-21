@@ -1,4 +1,4 @@
-function ui_element=add_ui(fig,position,style,font_size)
+function [ui_element,new_position]=add_ui(fig,position,style,font_size)
 
 % create ui element
 % one can make its input to be a last uicontrol
@@ -13,4 +13,10 @@ if nargin==4
 else
     ui_element.FontSize=0.4;
 end
+if strcmp(style,'popupmenu')
+    distance=0.8;
+else
+    distance=1.1;
+end
+new_position=new_position_element(position,distance);
 end

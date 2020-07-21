@@ -36,5 +36,5 @@ for k=1:fig.UserData.num_samples
 end
 
 R_hat=R_0.'+const*(p_error\t_term);
-P_hat_inv=(const^-2)*p_error/measurement_noise^2;
+P_hat_inv=(const^-2)*(p_error/measurement_noise^2);
 end

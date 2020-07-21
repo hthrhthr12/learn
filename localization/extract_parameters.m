@@ -1,5 +1,5 @@
 function extract_parameters(fig)
-% extract parameters from fig 
+% extract parameters from fig
 
 fig.UserData.f0=extract_element(fig,'f0',10^8); % MHz
 
@@ -22,7 +22,7 @@ fig.UserData.sample_rate=sample_rate;
 fig.UserData.TDOA_noise=extract_element(fig,'TDOA_noise',1e-6);
 
 fig.UserData.DDOP_noise=extract_element(fig,'DDOP_noise',1);
-%% extract velocity 
+%% extract velocity
 velocity_units=fig.findobj('Tag','velocity_units').Value;
 
 velocity=str2double(fig.findobj('Tag','velocity').String);
@@ -40,7 +40,7 @@ fig.UserData.velocity=3.6*velocity;
 initial_point=fig.findobj('Tag','initial_point').Value;
 switch initial_point
     case 1
-        %true 
+        %true
         R0=fig.UserData.emitters_UTM(1,:);
     case 2
         % middle
@@ -55,6 +55,17 @@ end
 % [fig.UserData.R_0,~] = geotrans2_other_func(R0,...
 %     'WGS84','GEO',0,'WGS84','UTM',36);
 fig.UserData.R_0=R0;
+%%
+fig.UserData.location_error=extract_element(fig,'location_error',1);
+fig.UserData.velocity_error=extract_element(fig,'velocity_error',1);
+fig.UserData.frequency_error=extract_element(fig,'frequency_error',1);
+fig.UserData.coherent_time=extract_element(fig,'coherent_time',1e-6);
+fig.UserData.beta_r=extract_element(fig,'beta_r',1e3);
+%%
+SNR=findobj(fig,'Tag','SNR');
+fig.UserData.SNR=SNR.Value;
+BW=findobj(fig,'Tag','BW');
+fig.UserData.BW=BW.Value;
 
 %% extract locations and velocities at receiving places
 fig.UserData.locations=cell(1,fig.UserData.num_platforms);
@@ -82,4 +93,13 @@ fig.UserData.locations=locations;
 fig.UserData.velocities=velocities*fig.UserData.velocity;
 fig.UserData.percentage_containment=90;
 fig.UserData.lambda=fig.UserData.c/fig.UserData.f0;
+%% noisy parameters
+
+fig.UserData.lambda_noisy=...
+    fig.UserData.c/(fig.UserData.f0+randn*fig.UserData.frequency_error);
+fig.UserData.locations_noisy=locations+...
+    randn(size(locations))*fig.UserData.location_error;
+fig.UserData.velocities_noisy=fig.UserData.velocities+...
+    randn(size(locations))*fig.UserData.velocity_error;
+
 end
