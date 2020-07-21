@@ -10,7 +10,9 @@ lines=findall(fig,'type','line');
 for k=1:length(lines)
     line=lines(k);
     if startsWith(line.Tag,prefix)
-        elements(end+1)=line;
+        elements=[elements,line];
+        % If one use the following line, then it will append only the xData
+        %elements(end+1)=line;
     end
 end
 

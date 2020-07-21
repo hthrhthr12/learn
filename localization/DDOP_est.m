@@ -22,6 +22,7 @@ measurement_noise=fig.UserData.DDOP_noise;
 
 F=v./norm_R_0s-(D_0./norm_R_0s.^2).*R_0s;
 
-[R_hat,P_hat_inv]=linear_est_WLS(fig,D_0,t,lambda,measurement_noise,F);
+[R_hat,P_hat_inv]=linear_est_WLS(fig,D_0,t,lambda,measurement_noise,F,...
+    fig.UserData.DDOP_total_noise);
 
 end

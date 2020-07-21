@@ -14,7 +14,7 @@ if ~isempty(findobj(fig,'Tag','TDOA'))
 end
 %% calculate noise std with platform errors
 extract_parameters(fig);
-[fig.UserData.DDOP_noise,fig.UserData.TDOA_noise]=noise_estimation(fig);
+[fig.UserData.DDOP_total_noise,fig.UserData.TDOA_total_noise]=noise_estimation(fig);
 
 %% TDOA DDOP estimation
 [R_hat_TDOA,P_hat_inv_TDOA]=TDOA_est(fig);

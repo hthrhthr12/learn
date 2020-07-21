@@ -43,7 +43,6 @@ ax = p.Results.axis;
 curAxis = axis(ax); % retrieve axis limits
 adjust_image= p.Results.adjust_image;
 
-verbose = false;
 baseurl = p.Results.BaseUrl;
 alpha = p.Results.Alpha;
 scale = p.Results.Scale;
@@ -86,11 +85,7 @@ hgrp = hggroup;
 for x = min(minmaxX):max(minmaxX)
     for y = min(minmaxY):max(minmaxY)
         
-        url = sprintf("%s/%d/%d/%d.png", baseurl, zoomlevel, x, y);
-        if verbose
-            disp(url)
-        end
-        
+        url = sprintf("%s/%d/%d/%d.png", baseurl, zoomlevel, x, y);        
         [indices, cmap, imAlpha] = memoizedImread(char(url));%
         %%%we convert string to char array
         

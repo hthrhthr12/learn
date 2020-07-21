@@ -14,6 +14,7 @@ measurement_noise=fig.UserData.TDOA_noise;
 R_s=(R_0-locations);
 
 F=R_s./vecnorm(R_s,2,2);
-[R_hat,P_hat_inv]=linear_est_WLS(fig,D_0,t,c,measurement_noise,F);
+[R_hat,P_hat_inv]=linear_est_WLS(fig,D_0,t,c,measurement_noise,F,...
+    fig.UserData.TDOA_total_noise);
 
 end

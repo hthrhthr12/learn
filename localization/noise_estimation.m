@@ -4,12 +4,24 @@ coherent_time=fig.UserData.coherent_time;
 BW=fig.UserData.BW;
 SNR=fig.UserData.SNR;
 beta_r=fig.UserData.beta_r;
-CRLB_TDOA=1/(8*pi^2*SNR*beta_r^2*BW*coherent_time);
+CRLB=1/(8*pi^2*SNR*beta_r^2*BW*coherent_time);
 
-lambda=physconst('LightSpeed')/f0;
-noise=lambda^2*sum(velocity_error.*velocity_error)^2+...
-    location_error^2*lambda^2*((norm(v)/norm(r))^2-(v*r)^2/(norm(r)^4))+...
-    f0_error^2/physconst('LightSpeed')*((v1*r1)/norm(r1)-(v2*r2)/norm(r2))^2;
+c=fig.UserData.c;
+lambda_s=fig.UserData.lambda^2;
+%measurement noise
+DDOP_noise=fig.UserData.DDOP_noise;
+TDOA_noise=fig.UserData.TDOA_noise+fig.UserData.location_error^2/c^2;
+v=fig.UserData.velocities;
+locations=fig.UserData.locations;
 
-[DDOP_noise,TDOA_noise]=sqrt([DDOP_noise,TDOA_noise]);
+R_s=fig.UserData.emitters_UTM-locations;
+norm_R_s=vecnorm(R_s,2,2);
+vR_s=sum(v.*R_s,2)./norm_R_s;
+norm_v=vecnorm(v,2,2);
+
+DDOP_noise=DDOP_noise+(fig.UserData.frequency_error^2/c^2)*vR_s.^2+...
+fig.UserData.velocity_error.^2/lambda_s+...
+(norm_v.^2./norm_R_s.^2-(vR_s./norm_R_s).^2)/lambda_s;
+DDOP_noise=DDOP_noise+CRLB;
+TDOA_noise=TDOA_noise+CRLB;
 end
