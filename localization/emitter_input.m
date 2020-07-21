@@ -5,12 +5,9 @@ fig.UserData.help_text.String=['left click for transmitter,',...
     ' right click for ending'];
 set(fig,'WindowButtonDownFcn',@add_emitter);
     function add_emitter(~,~)
-        if strcmp('alt',get(fig, 'SelectionType'))
-            frequency_input(fig);
-            return
-        end
         fig.UserData.num_emitters=fig.UserData.num_emitters+1;
         plot_cursor_position(fig,'tag','emitter_','field','num_emitters')
+        frequency_input(fig);
     end
     function frequency_input(fig)
         % emitter were ended
