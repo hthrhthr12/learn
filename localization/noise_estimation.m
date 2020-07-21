@@ -1,5 +1,7 @@
 function [DDOP_noise,TDOA_noise]=noise_estimation(fig)
-% estimate the noise of DDOP without CRLB
+% estimate the noise of DDOP and DTOA 
+% The function returns the variance, i.e. standard deviation squared
+
 coherent_time=fig.UserData.coherent_time;
 BW=fig.UserData.BW;
 SNR=fig.UserData.SNR;
@@ -8,9 +10,9 @@ CRLB=1/(8*pi^2*SNR*beta_r^2*BW*coherent_time);
 
 c=fig.UserData.c;
 lambda_s=fig.UserData.lambda^2;
-%measurement noise
-DDOP_noise=fig.UserData.DDOP_noise;
-TDOA_noise=fig.UserData.TDOA_noise+fig.UserData.location_error^2/c^2;
+%The measurement stds are fig.UserData.DDOP_noise,fig.UserData.TDOA_noise 
+DDOP_noise=fig.UserData.DDOP_noise.^2;
+TDOA_noise=fig.UserData.TDOA_noise.^2+fig.UserData.location_error^2/c^2;
 v=fig.UserData.velocities;
 locations=fig.UserData.locations;
 
