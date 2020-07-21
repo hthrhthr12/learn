@@ -5,14 +5,18 @@ if fig.UserData.num_platforms<3
     disp('cannot estimate by less than three platforms')
     return;
 end
-
+%% DELETE old estimation
 if ~isempty(findobj(fig,'Tag','TDOA'))
     %delete old estimation
     delete(findobj(fig,'Tag','TDOA'))
     delete(findobj(fig,'Tag','DDOP'))
     delete(findobj(fig,'Tag','TDOA_DDOP'))
 end
+%% calculate noise std with platform errors
 extract_parameters(fig);
+[fig.UserData.DDOP_noise,fig.UserData.TDOA_noise]=noise_estimation(fig);
+
+%% TDOA DDOP estimation
 [R_hat_TDOA,P_hat_inv_TDOA]=TDOA_est(fig);
 [R_hat_DDOP,P_hat_inv_DDOP]=DDOP_est(fig);
 

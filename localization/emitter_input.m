@@ -98,7 +98,7 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         [~,position]=add_slider(fig,position,1e8,2e8,'(Hz)','BW');
         %%
         [coherent_time,position]=add_ui(fig,position,'edit');
-        coherent_time.String='1e-6 sec std coherent time';
+        coherent_time.String='1e-6 sec coherent time';
         coherent_time.Tag='coherent_time';
         %%
         [beta_r,~]=add_ui(fig,position,'edit');
