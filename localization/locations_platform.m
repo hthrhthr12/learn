@@ -14,7 +14,6 @@ else
     fig.UserData.num_samples=min(fig.UserData.num_samples,num_samples);
     % we estimate for simplicity by the min num_samples
 end
-disp(['num samples in path: ',num2str(num_samples)])
 
 path_from_start=(linspace(0,cum_path(end),num_samples)).';
 locations=zeros(num_samples,2);

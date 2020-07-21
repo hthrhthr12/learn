@@ -21,7 +21,8 @@ norm_v=vecnorm(v,2,2);
 
 DDOP_noise=DDOP_noise+(fig.UserData.frequency_error^2/c^2)*vR_s.^2+...
 fig.UserData.velocity_error.^2/lambda_s+...
-(norm_v.^2./norm_R_s.^2-(vR_s./norm_R_s).^2)/lambda_s;
+(fig.UserData.location_error^2/lambda_s)*(norm_v.^2./norm_R_s.^2-(vR_s./norm_R_s).^2);
+
 DDOP_noise=DDOP_noise+CRLB;
 TDOA_noise=TDOA_noise+CRLB;
 end
