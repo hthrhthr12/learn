@@ -27,13 +27,13 @@ disp('DDOP')
 [R_hat_DDOP,P_hat_inv_DDOP]=DDOP_est(fig);
 disp(P_hat_inv_DDOP)
 
-G_sums_TDOA=plot_ellipse(fig,R_hat_TDOA,P_hat_inv_TDOA,'color','b','Tag','TDOA');
-G_sums_DDOP=plot_ellipse(fig,R_hat_DDOP,P_hat_inv_DDOP,'color','c','Tag','DDOP');
+[G_sums_TDOA,h1]=plot_ellipse(fig,R_hat_TDOA,P_hat_inv_TDOA,'color','b','Tag','TDOA');
+[G_sums_DDOP,h2]=plot_ellipse(fig,R_hat_DDOP,P_hat_inv_DDOP,'color','c','Tag','DDOP');
 % the scales are very different
 [R_hat,P_hat_inv]=G_sums2est(G_sums_TDOA+G_sums_DDOP);
 disp('combined')
 disp(P_hat_inv)
-plot_ellipse(fig,R_hat,P_hat_inv,'color','g','Tag','TDOA_DDOP');
-fig.UserData.help_text.String=['paths start small and increases, '...
-,'results: blue: TDOA, cyan: DDOP, combined: green'];
+[~,h3]=plot_ellipse(fig,R_hat,P_hat_inv,'color','g','Tag','TDOA_DDOP');
+fig.UserData.help_text.String='paths start large and decreases';
+legend([h1,h2,h3])
 end

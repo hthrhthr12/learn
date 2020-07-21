@@ -1,4 +1,4 @@
-function G_sums=plot_ellipse(fig,R_hat,P_hat_inv,varargin)
+function [G_sums,h]=plot_ellipse(fig,R_hat,P_hat_inv,varargin)
 p=inputParser;
 p.addParameter('color','b');
 p.addParameter('Tag','result');
@@ -11,7 +11,8 @@ xy=G_sums_sample(fig,G_sums,R_hat,200);
 ellipse_geo=my_utm2ell(xy.','wgs84',36);
 
 % 36 is the zone in UTM
-plot(fig.CurrentAxes,ellipse_geo(:,1),ellipse_geo(:,2),...
-    [p.Results.color,'*'],'Tag',p.Results.Tag);
+h=plot(fig.CurrentAxes,ellipse_geo(:,1),ellipse_geo(:,2),...
+    [p.Results.color,'*'],'Tag',p.Results.Tag,'DisplayName',...
+    strrep(p.Results.Tag,'_',' '));
 
 end
