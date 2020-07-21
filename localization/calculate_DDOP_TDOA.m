@@ -11,9 +11,12 @@ if ~isempty(findobj(fig,'Tag','TDOA'))
     delete(findobj(fig,'Tag','TDOA'))
     delete(findobj(fig,'Tag','DDOP'))
     delete(findobj(fig,'Tag','TDOA_DDOP'))
+    delete(findobj(fig,'Tag','initial'))
 end
 %% calculate noise std with platform errors
 extract_parameters(fig);
+R_0=my_utm2ell(fig.UserData.R_0,'wgs84',36);
+plot(R_0(1),R_0(2),'kh','Tag','initial');
 [fig.UserData.DDOP_total_noise,fig.UserData.TDOA_total_noise]=noise_estimation(fig);
 
 %% TDOA DDOP estimation
