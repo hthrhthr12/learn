@@ -6,7 +6,7 @@ elements=[];
 % one can initialize empty by
 % line.empty()
 
-lines=findall(fig,'type','line');
+lines=fig.CurrentAxes.Children;
 for k=1:length(lines)
     line=lines(k);
     if startsWith(line.Tag,prefix)

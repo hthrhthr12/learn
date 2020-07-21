@@ -34,5 +34,6 @@ G_sums_DDOP=plot_ellipse(fig,R_hat_DDOP,P_hat_inv_DDOP,'color','c','Tag','DDOP')
 disp('combined')
 disp(P_hat_inv)
 plot_ellipse(fig,R_hat,P_hat_inv,'color','g','Tag','TDOA_DDOP');
-fig.UserData.help_text.String='blue: TDOA, cyan: DDOP, combined: green';
+fig.UserData.help_text.String=['paths start small and increases, '...
+,'results: blue: TDOA, cyan: DDOP, combined: green'];
 end
