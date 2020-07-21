@@ -16,3 +16,21 @@ f.UserData.help_text=help_text;
 hold on
 points_gui(f,0);
 
+%% new run by using the toolbar
+
+t = uitoolbar(f);
+
+% Read an image
+[img,map] = imread(fullfile(matlabroot,...
+            'toolbox','matlab','icons','matlabicon.gif'));
+
+% Convert image from indexed to truecolor
+icon = ind2rgb(img,map);
+
+% Create a uipushtool in the toolbar
+p = uipushtool(t,'TooltipString','Toolbar push button',...
+                 'ClickedCallback',...
+                 'main');
+
+% Set the button icon
+p.CData = icon;

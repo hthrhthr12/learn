@@ -71,7 +71,7 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         TDOA_noise.Tag='TDOA_noise';
         %%
         [DDOP_noise,position]=add_ui(fig,position,'edit');
-        DDOP_noise.String='DDOP std: 1 Hz';
+        DDOP_noise.String='DDOP std: 1e4 Hz';
         DDOP_noise.Tag='DDOP_noise';
         
         %% initial_point
