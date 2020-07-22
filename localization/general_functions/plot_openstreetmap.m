@@ -37,6 +37,7 @@ addParameter(p, 'BaseUrl','http://a.tile.openstreetmap.org', @isstring);
 addParameter(p, 'Alpha', 1, validScalar0to1);
 addParameter(p, 'Scale', 1, validScalarPos);
 addParameter(p, 'MaxZoomLevel', 16, validMaxZoomLevel);
+addParameter(p, 'save_images', false);
 parse(p,varargin{:});
 
 ax = p.Results.axis;
@@ -81,22 +82,35 @@ minmaxX = lon2x(curAxis(1:2), zoomlevel);
 minmaxY = lat2y(curAxis(3:4), zoomlevel);
 
 hgrp = hggroup;
-
+load images.mat images_save
+count=0;
+images=cell(9,2);
 for x = min(minmaxX):max(minmaxX)
     for y = min(minmaxY):max(minmaxY)
+        count=count+1;
         
-        url = sprintf("%s/%d/%d/%d.png", baseurl, zoomlevel, x, y);        
-        [indices, cmap, imAlpha] = memoizedImread(char(url));%
-        %%%we convert string to char array
-        
-        % Some files, t.ex. from openseamap with transparency, come without
-        % colormap. They have three dimensions in indices already.
-        if size(indices, 3) > 1
-            imagedata = indices;
-        else
-            imagedata = ind2rgb(indices, cmap);
+        url = sprintf("%s/%d/%d/%d.png", baseurl, zoomlevel, x, y);
+        try
+            [indices, cmap, imAlpha] = memoizedImread(char(url));%
+            %%%we convert string to char array
+            
+            % Some files, t.ex. from openseamap with transparency, come without
+            % colormap. They have three dimensions in indices already.
+            if size(indices, 3) > 1
+                imagedata = indices;
+            else
+                imagedata = ind2rgb(indices, cmap);
+            end
+            
+            if p.Results.save_images
+                %save the current images
+                images{count,1}= imagedata;
+                images{count,2}=imAlpha;
+            end
+        catch
+            imagedata=images_save{count,1};
+            imAlpha=images_save{count,2};
         end
-        
         if numel(imAlpha) == 0
             imAlpha = 1;
         end
@@ -114,6 +128,11 @@ for x = min(minmaxX):max(minmaxX)
 end
 set(hgrp,'tag','osm_map')
 
+if p.Results.save_images
+    %save the current images
+    images_save=images;
+    save images.mat images_save
+end
 
 %%
 

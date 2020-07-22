@@ -1,9 +1,15 @@
-function plot_cursor_position(fig,varargin)
+function [x_true,y_true]=plot_cursor_position(fig,varargin)
 p=inputParser;
-p.addParameter('tag','emitter_');
-p.addParameter('field','num_emitters');
+p.addParameter('tag','emitter_1');
+p.addParameter('marker','rx');
 p.parse(varargin{:});
-[x,y]=inter2axes(fig,fig.CurrentPoint(1),fig.CurrentPoint(2));
+[x_true,y_true]=choose_data_in_axis(fig,fig.CurrentPoint);
+% if the currentPoint is outside the axis x_true is empty
 
-plot(fig.CurrentAxes,x,y,'rx','Tag',[p.Results.tag,num2str(fig.UserData.num_emitters)]);
+if isempty(x_true)
+    return;
+end
+plot(fig.CurrentAxes,x_true,y_true,p.Results.marker...
+    ,'Tag',p.Results.tag);
+set(fig,'WindowButtonDownFcn',@(~,~)[]);
 end
