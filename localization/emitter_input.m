@@ -113,7 +113,4 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         fig.UserData.c=physconst('LightSpeed');
         fig.UserData.display_DDOP=0;
     end
-
 end
-
-
