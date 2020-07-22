@@ -1,5 +1,12 @@
-function extract_parameters(fig)
-% extract parameters from fig
+function extract_parameters(fig,varargin)
+
+%% input
+p=inputParser;
+p.addParameter('calculate_R_0',true);
+p.addParameter('randomized',true);
+p.parse(varargin{:});
+
+%% extract parameters from fig
 
 fig.UserData.f0=extract_element(fig,'f0',10^8); % MHz
 
@@ -37,25 +44,26 @@ end
 fig.UserData.velocity=3.6*velocity;
 
 %% extract R0
-initial_point=fig.findobj('Tag','initial_point').Value;
-switch initial_point
-    case 1
-        %true
-        fig.UserData.R_0=fig.UserData.emitters_UTM(1,:);
-    case 2
-        % middle
-        [~,fig.UserData.R_0]=ell2utm([mean(fig.CurrentAxes.XLim),...
-            mean(fig.CurrentAxes.YLim)],'wgs84',[],36,[],[]);
-        
-    case 3
-        %random
-        initial_point_noise=extract_element(fig,'initial_point_noise',1); % 1m
-        fig.UserData.R_0=fig.UserData.emitters_UTM(1,:)+initial_point_noise*randn(1,2);
-end
-    
+fig.UserData.initial_point_noise=extract_element(fig,'initial_point_noise',1); % 1m
 
-% [fig.UserData.R_0,~] = geotrans2_other_func(R0,...
-%     'WGS84','GEO',0,'WGS84','UTM',36);
+if p.Results.calculate_R_0
+    initial_point=fig.findobj('Tag','initial_point').Value;
+    switch initial_point
+        case 1
+            %true
+            fig.UserData.R_0=fig.UserData.emitters_UTM(1,:);
+        case 2
+            % middle
+            [~,fig.UserData.R_0]=ell2utm([mean(fig.CurrentAxes.XLim),...
+                mean(fig.CurrentAxes.YLim)],'wgs84',[],36,[],[]);
+            
+        case 3
+            %random
+            fig.UserData.R_0=fig.UserData.emitters_UTM(1,:)+...
+                fig.UserData.initial_point_noise*randn(1,2);
+    end
+    
+end
 
 %%
 fig.UserData.location_error=extract_element(fig,'location_error',1);
@@ -96,12 +104,7 @@ fig.UserData.velocities=velocities*fig.UserData.velocity;
 fig.UserData.percentage_containment=90;
 fig.UserData.lambda=fig.UserData.c/fig.UserData.f0;
 %% noisy parameters
-
-fig.UserData.lambda_noisy=...
-    fig.UserData.c/(fig.UserData.f0+randn*fig.UserData.frequency_error);
-fig.UserData.locations_noisy=locations+...
-    randn(size(locations))*fig.UserData.location_error;
-fig.UserData.velocities_noisy=fig.UserData.velocities+...
-    randn(size(locations))*fig.UserData.velocity_error;
-
+if p.Results.randomized
+    randomized_variables(fig)
+end
 end

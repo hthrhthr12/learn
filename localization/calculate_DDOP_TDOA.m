@@ -14,10 +14,10 @@ if ~isempty(findobj(fig,'Tag','TDOA'))
     delete(findobj(fig,'Tag','R0'))
 end
 
-%% if manual initial point for WLS
+%% if choose manually initial point for WLS
 initial_point=fig.findobj('Tag','initial_point').Value;
 if initial_point==4 && ~isnumeric(event)
-        set(fig,'WindowButtonDownFcn',@add_initial);
+    set(fig,'WindowButtonDownFcn',@add_initial);
     return;
 end
     function add_initial(~,~)

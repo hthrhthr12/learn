@@ -14,9 +14,9 @@ else
     ui_element.FontSize=0.4;
 end
 if strcmp(style,'popupmenu')
-    distance=0.8;
+    distance=0.75;
 else
-    distance=1.1;
+    distance=1.05;
 end
 new_position=new_position_element(position,distance);
 end

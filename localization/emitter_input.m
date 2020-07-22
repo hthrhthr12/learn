@@ -104,10 +104,13 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         coherent_time.String='1e-6 sec coherent time';
         coherent_time.Tag='coherent_time';
         %%
-        [beta_r,~]=add_ui(fig,position,'edit');
+        [beta_r,position]=add_ui(fig,position,'edit');
         beta_r.String='1kHz beta_r';
         beta_r.Tag='beta_r';
-        
+        %%
+        [stability,~]=add_ui(fig,position,'pushbutton');
+        stability.String='stability check';
+        stability.Callback=@stability_check;
         %%
         locations2utm(fig);
         fig.UserData.c=physconst('LightSpeed');
