@@ -1,4 +1,4 @@
-function calculate_DDOP_TDOA(src,~)
+function calculate_DDOP_TDOA(src,event)
 fig=src.Parent;
 
 if fig.UserData.num_platforms<3
@@ -11,12 +11,26 @@ if ~isempty(findobj(fig,'Tag','TDOA'))
     delete(findobj(fig,'Tag','TDOA'))
     delete(findobj(fig,'Tag','DDOP'))
     delete(findobj(fig,'Tag','TDOA_DDOP'))
-    delete(findobj(fig,'Tag','initial'))
+    delete(findobj(fig,'Tag','R0'))
 end
+
+%% if manual initial point for WLS
+initial_point=fig.findobj('Tag','initial_point').Value;
+if initial_point==4 && ~isnumeric(event)
+        set(fig,'WindowButtonDownFcn',@add_initial);
+    return;
+end
+    function add_initial(~,~)
+        delete_obj(fig,'R0');
+        [x,y]=plot_cursor_position(fig,'plot_point',false);
+        [~,fig.UserData.R_0]=ell2utm([x,y],'wgs84',[],36,[],[]);
+        calculate_DDOP_TDOA(src,0);
+    end
+
 %% calculate noise std with platform errors
 extract_parameters(fig);
 R_0=my_utm2ell(fig.UserData.R_0,'wgs84',36);
-plot(R_0(1),R_0(2),'kh','Tag','initial');
+plot(R_0(1),R_0(2),'kh','Tag','R0');
 [fig.UserData.DDOP_total_noise,fig.UserData.TDOA_total_noise]=noise_estimation(fig);
 
 %% TDOA DDOP estimation
@@ -35,5 +49,7 @@ disp('combined')
 disp(P_hat_inv)
 [~,h3]=plot_ellipse(fig,R_hat,P_hat_inv,'color','g','Tag','TDOA_DDOP');
 fig.UserData.help_text.String='paths start large and decreases';
-legend([h1,h2,h3])
+lgd=legend([h1,h2,h3]);
+lgd.ItemHitFcn={@disappear_plot};
+
 end

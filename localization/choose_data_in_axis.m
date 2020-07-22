@@ -10,7 +10,7 @@ relevant=(x_input>axes_pos(1))&(x_input<(axes_pos(1)+axes_pos(3)))&...
 
 x_input=x_input(relevant);
 y_input=y_input(relevant);
-if length(x_input)>1
+if ~isempty(x_input)
     [x_true,y_true]=inter2axes(fig,x_input,y_input); 
 else
     x_true=[];

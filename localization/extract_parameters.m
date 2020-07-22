@@ -41,20 +41,22 @@ initial_point=fig.findobj('Tag','initial_point').Value;
 switch initial_point
     case 1
         %true
-        R0=fig.UserData.emitters_UTM(1,:);
+        fig.UserData.R_0=fig.UserData.emitters_UTM(1,:);
     case 2
         % middle
-        [~,R0]=ell2utm([mean(fig.CurrentAxes.XLim),mean(fig.CurrentAxes.YLim)],'wgs84',[],36,[],[]);
-    otherwise
+        [~,fig.UserData.R_0]=ell2utm([mean(fig.CurrentAxes.XLim),...
+            mean(fig.CurrentAxes.YLim)],'wgs84',[],36,[],[]);
+        
+    case 3
         %random
         initial_point_noise=extract_element(fig,'initial_point_noise',1); % 1m
-        R0=fig.UserData.emitters_UTM(1,:)+initial_point_noise*randn(1,2);
+        fig.UserData.R_0=fig.UserData.emitters_UTM(1,:)+initial_point_noise*randn(1,2);
 end
-
+    
 
 % [fig.UserData.R_0,~] = geotrans2_other_func(R0,...
 %     'WGS84','GEO',0,'WGS84','UTM',36);
-fig.UserData.R_0=R0;
+
 %%
 fig.UserData.location_error=extract_element(fig,'location_error',1);
 fig.UserData.velocity_error=extract_element(fig,'velocity_error',1);

@@ -4,7 +4,7 @@ fig.UserData.num_emitters=0;
 fig.UserData.help_text.String=['left click for transmitter,',...
     ' right click for ending'];
 set(fig,'WindowButtonDownFcn',@add_emitter);
-    function add_emitter(~,~)        
+    function add_emitter(~,~)
         [x_true,~]=plot_cursor_position(fig,'tag','emitter_1');
         if ~isempty(x_true)
             fig.UserData.num_emitters=fig.UserData.num_emitters+1;
@@ -80,9 +80,8 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         [initial_point,position]=add_ui(fig,position,'popupmenu');
         initial_point.String={'true','middle','random','manual'};
         initial_point.Tag='initial_point';
-        initial_point.KeyPressFcn=@input_initial_point;
         [initial_point_noise,position]=add_ui(fig,position,'edit');
-        initial_point_noise.String='1m std from true emitter';
+        initial_point_noise.String='Initial WLS: 1m std from true emitter';
         initial_point_noise.Tag='initial_point_noise';
         
         %%
@@ -115,18 +114,6 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         fig.UserData.display_DDOP=0;
     end
 
-    function input_initial_point(src,~)
-        % input by clicking of the initial point for WLS
-        if src.Value~=4
-            return;
-        end
-        set(fig,'WindowButtonDownFcn',@add_initial);
-        function add_initial(~,~)
-            delete_obj(fig,'R0');
-            [x,y]=plot_cursor_position(fig,'tag','R0','marker','kh');
-            fig.UserData.R0=ell2utm([x,y],'wgs84',[],zone,[],[]);
-        end
-    end
 end
 
 
