@@ -45,24 +45,10 @@ fig.UserData.velocity=3.6*velocity;
 
 %% extract R0
 fig.UserData.initial_point_noise=extract_element(fig,'initial_point_noise');
-
-if p.Results.calculate_R_0
-    initial_point=fig.findobj('Tag','initial_point').Value;
-    switch initial_point
-        case 1
-            %true
-            fig.UserData.R_0=fig.UserData.emitters_UTM(1,:);
-        case 2
-            % middle
-            [~,fig.UserData.R_0]=ell2utm([mean(fig.CurrentAxes.XLim),...
-                mean(fig.CurrentAxes.YLim)],'wgs84',[],36,[],[]);
-            
-        case 3
-            %random
-            fig.UserData.R_0=fig.UserData.emitters_UTM(1,:)+...
-                fig.UserData.initial_point_noise*randn(1,2);
-    end
+fig.UserData.initial_point=fig.findobj('Tag','initial_point').Value;
     
+if p.Results.calculate_R_0
+    calculate_R_0(fig);    
 end
 
 %%
@@ -72,6 +58,7 @@ fig.UserData.frequency_error=extract_element(fig,'frequency_error');
 fig.UserData.coherent_time=extract_element(fig,'coherent_time');
 fig.UserData.beta_r=extract_element(fig,'beta_r');
 fig.UserData.WLS_batch=extract_element(fig,'WLS_batch');
+fig.UserData.UTM_grid=extract_element(fig,'UTM_grid');
 
 %%
 SNR=findobj(fig,'Tag','SNR');

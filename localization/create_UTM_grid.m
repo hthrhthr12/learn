@@ -1,8 +1,14 @@
 function create_UTM_grid(fig)
 % create UTM grid
 
-num_grid=100;
-fig.UserData.num_grid=num_grid;
+num_grid=fig.UserData.UTM_grid;
+
+if isfield(fig.UserData,'xgrid')&& length(fig.UserData.xgrid)==num_grid
+    % no need to calculate
+    return
+end
+%% calculate grid
+
 x_lim=fig.CurrentAxes.XLim;
 y_lim=fig.CurrentAxes.YLim;
 

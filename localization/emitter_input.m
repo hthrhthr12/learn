@@ -20,7 +20,6 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
     end
     function frequency_input(fig)
         % emitter were ended
-        create_UTM_grid(fig);
         % start get frequencies
         set(fig,'WindowButtonDownFcn',@(~,~)[])
         [sample_rate,position]=add_ui(fig,[0.892,0.945,0.076041,0.04021],'Edit','sample_rate');
@@ -107,9 +106,13 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         step_WLS.String='step WLS';
         step_WLS.Callback=@step_DDOP;
         %%
-        [WLS_batch,~]=add_ui(fig,position,'edit','WLS_batch');
+        [WLS_batch,position]=add_ui(fig,position,'edit','WLS_batch');
         WLS_batch.String='1000 samples batch size';
         WLS_batch.UserData.default=1e3;
+        %%
+        [UTM_grid,~]=add_ui(fig,position,'edit','UTM_grid');
+        UTM_grid.String='100 points in axis';
+        UTM_grid.UserData.default=100;
         
         %%
         locations2utm(fig);

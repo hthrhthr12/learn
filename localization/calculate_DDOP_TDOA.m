@@ -1,5 +1,6 @@
 function calculate_DDOP_TDOA(src,event)
 fig=src.Parent;
+create_UTM_grid(fig);
 
 if fig.UserData.num_platforms<3
     disp('cannot estimate by less than three platforms')

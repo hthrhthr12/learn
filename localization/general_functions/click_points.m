@@ -38,7 +38,7 @@ fig.WindowButtonUpFcn=@plot_line;
         if length(x_true)>1
             fig.UserData.num_lines=fig.UserData.num_lines+1;
             line=scatter(fig.CurrentAxes,x_true,y_true,...
-                linspace(100,10,length(x_true)),'o');
+                linspace(500,1,length(x_true)),'o');
             line.Tag=['line_',num2str(fig.UserData.num_lines)];
         end
         fig.WindowButtonMotionFcn=@(~,~)[];

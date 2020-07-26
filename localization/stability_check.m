@@ -12,6 +12,7 @@ fig.UserData.emitters_UTM_last=fig.UserData.emitters_UTM;
 N=1:50; %50 Monte Carlo simulations
 
 extract_parameters(fig,'calculate_R_0',false,'randomized',false);
+create_UTM_grid(fig);
 
 %Grid in GEO transformed to UTM
 xygrid=fig.UserData.xygrid;
@@ -44,9 +45,8 @@ title('ECDF of 90% containment ellipse')
         area_est=mean(arrayfun(@(~)area_ellipse_estimation,N));
         function area=area_ellipse_estimation
             randomized_variables(fig);
-            fig.UserData.R_0=xygrid(index,:)+...
-                fig.UserData.initial_point_noise*randn(1,2);
-            [R_hat_TDOA,P_hat_inv_TDOA]=TDOA_est(fig);         
+            calculate_R_0(fig);
+            [R_hat_TDOA,P_hat_inv_TDOA]=TDOA_est(fig);
             [R_hat_DDOP,P_hat_inv_DDOP]=DDOP_est(fig);
             [~,P_hat_inv]=G_sums2est(retrieve_G_sums(R_hat_TDOA,P_hat_inv_TDOA)+...
                 retrieve_G_sums(R_hat_DDOP,P_hat_inv_DDOP));
