@@ -1,4 +1,11 @@
 function emitter_input(fig)
+
+if fig.UserData.num_lines==0
+    error_msg='no platforms were entered, run again';
+    fig.UserData.help_text.String=error_msg;
+    disp(error_msg)
+    return
+end
 fig.UserData.num_emitters=0;
 % start get emitters
 fig.UserData.help_text.String=['left click for transmitter,',...
@@ -47,7 +54,7 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         fig.UserData.help_text.String=...
             {'Click for Done'};
         [velocity,position]=add_ui(fig,position,'edit','velocity');
-        velocity.String='velocity: 500';
+        velocity.String='velocity: 500'; % 500 km/h = 1800 m/s
         
         %%
         [TDOA_noise,position]=add_ui(fig,position,'edit','TDOA_noise');
@@ -90,7 +97,7 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         %%
         [beta_r,position]=add_ui(fig,position,'edit','beta_r');
         beta_r.String='1kHz beta_r';
-        beta_r.UserData.default=1;
+        beta_r.UserData.default=1000;
         %%
         [stability,position]=add_ui(fig,position,'pushbutton','stability_check');
         stability.String='stability check';
