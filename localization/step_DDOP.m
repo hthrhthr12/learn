@@ -8,10 +8,7 @@ if fig.UserData.num_platforms<3
     disp('cannot estimate by less than three platforms')
     return;
 end
-arrows=findall(fig,'Tag','est');
-if ~isempty(arrows)
-    delete(arrows)
-end
+delete(findall(fig,'Tag','est'));
 
 fig.UserData.emitters_UTM_last=fig.UserData.emitters_UTM;
 extract_parameters(fig,'calculate_R_0',false,'randomized',false);
