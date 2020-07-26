@@ -1,7 +1,7 @@
-function delete_obj(fig,tag)
+function delete_obj(parent,tag)
 
-if ~isempty(findobj(fig,'Tag',tag))
+if ~isempty(findobj(parent,'Tag',tag))
     %delete old object
-    delete(findobj(fig,'Tag',tag))
+    delete(findobj(parent,'Tag',tag))
 end
 end

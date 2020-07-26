@@ -8,10 +8,10 @@ axis(f.CurrentAxes,[35.21,35.22,31.76,31.77]);
 xlabel('longitude')
 ylabel('latitude')
 plot_openstreetmap;
-help_text=add_ui(f,[0.0566,0.9399,0.80729,0.03418],'text');
+help_text=add_ui(f,[0.0566,0.9399,0.80729,0.03418],'text','help_text');
 help_text.FontSize=0.8;
 help_text.String='draw platforms paths, right click for finishing';
-help_text.Tag='help_text';
+
 f.UserData.help_text=help_text;
 hold on
 points_gui(f,0);
@@ -22,15 +22,15 @@ t = uitoolbar(f);
 
 % Read an image
 [img,map] = imread(fullfile(matlabroot,...
-            'toolbox','matlab','icons','matlabicon.gif'));
+    'toolbox','matlab','icons','matlabicon.gif'));
 
 % Convert image from indexed to truecolor
 icon = ind2rgb(img,map);
 
 % Create a uipushtool in the toolbar
 p = uipushtool(t,'TooltipString','Toolbar push button',...
-                 'ClickedCallback',...
-                 'main');
+    'ClickedCallback',...
+    'main');
 
 % Set the button icon
 p.CData = icon;

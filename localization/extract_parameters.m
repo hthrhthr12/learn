@@ -8,11 +8,11 @@ p.parse(varargin{:});
 
 %% extract parameters from fig
 
-fig.UserData.f0=extract_element(fig,'f0',10^8); % MHz
+fig.UserData.f0=extract_element(fig,'f0');
 
 fig.UserData.use_num_samples=true;
 
-fig.UserData.num_samples=extract_element(fig,'num_samples',12*10^3); %12k
+fig.UserData.num_samples=extract_element(fig,'num_samples');
 
 %%
 sample_rate=str2double(fig.findobj('Tag','sample_rate').String);
@@ -26,9 +26,9 @@ end
 fig.UserData.sample_rate=sample_rate;
 
 %% noises
-fig.UserData.TDOA_noise=extract_element(fig,'TDOA_noise',1e-6);
+fig.UserData.TDOA_noise=extract_element(fig,'TDOA_noise');
 
-fig.UserData.DDOP_noise=extract_element(fig,'DDOP_noise',1e4);
+fig.UserData.DDOP_noise=extract_element(fig,'DDOP_noise');
 %% extract velocity
 velocity_units=fig.findobj('Tag','velocity_units').Value;
 
@@ -44,7 +44,7 @@ end
 fig.UserData.velocity=3.6*velocity;
 
 %% extract R0
-fig.UserData.initial_point_noise=extract_element(fig,'initial_point_noise',1); % 1m
+fig.UserData.initial_point_noise=extract_element(fig,'initial_point_noise');
 
 if p.Results.calculate_R_0
     initial_point=fig.findobj('Tag','initial_point').Value;
@@ -66,11 +66,13 @@ if p.Results.calculate_R_0
 end
 
 %%
-fig.UserData.location_error=extract_element(fig,'location_error',1);
-fig.UserData.velocity_error=extract_element(fig,'velocity_error',1);
-fig.UserData.frequency_error=extract_element(fig,'frequency_error',1);
-fig.UserData.coherent_time=extract_element(fig,'coherent_time',1e-6);
-fig.UserData.beta_r=extract_element(fig,'beta_r',1e3);
+fig.UserData.location_error=extract_element(fig,'location_error');
+fig.UserData.velocity_error=extract_element(fig,'velocity_error');
+fig.UserData.frequency_error=extract_element(fig,'frequency_error');
+fig.UserData.coherent_time=extract_element(fig,'coherent_time');
+fig.UserData.beta_r=extract_element(fig,'beta_r');
+fig.UserData.WLS_batch=extract_element(fig,'WLS_batch');
+
 %%
 SNR=findobj(fig,'Tag','SNR');
 fig.UserData.SNR=SNR.Value;
