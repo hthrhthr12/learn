@@ -1,6 +1,12 @@
-function DDOP=create_DDOP(fig,return_gradient)
+function DDOP=create_DDOP(fig,varargin)
 % we display DDOP map of two points
 % we can display cost map of sum of error squared
+p=inputParser;
+p.addOptional("return_gradient","none",@isstring);
+p.parse(varargin{:});
+return_gradient=p.Results.return_gradient;
+
+%% DDOP creation
 
 xygrid=fig.UserData.xygrid;
 x_1=fig.UserData.locations(1,:);
@@ -14,8 +20,22 @@ DDOP=2/fig.UserData.lambda*((x_1-xygrid)*v_1./vecnorm(x_1-xygrid,2,2)...
 
 num_grid=fig.UserData.num_grid;
 DDOP=reshape(DDOP,num_grid,num_grid);
-if return_gradient
-    [FX,FY] = gradient(DDOP);
-    DDOP=sqrt(FX.^2+FY.^2);
+
+%% DDOP gradient
+if return_gradient=="none"
+    return
 end
+
+[FX,FY] = gradient(DDOP);
+
+if return_gradient=="norm"
+    DDOP=sqrt(FX.^2+FY.^2);
+elseif return_gradient=="gradient"
+    DDOP={FX,FY};
+elseif return_gradient=="log_gradient"
+    DDOP_log_norm=log(sqrt(FX.^2+FY.^2));
+    grad_log=@(F)sign(F).*log(abs(F));
+    DDOP={DDOP_log_norm,grad_log(FX),grad_log(FY)};
+end
+
 end

@@ -1,6 +1,6 @@
 function stability_check(src,~)
 fig=src.Parent;
-
+tic
 %CDF (and heatmap on the grid) of the ellipse area for fixed sampling path
 % and emitter in each point on the grid.
 if fig.UserData.num_platforms<3
@@ -9,20 +9,31 @@ if fig.UserData.num_platforms<3
 end
 fig.UserData.emitters_UTM_last=fig.UserData.emitters_UTM;
 
-N=1:100; % Monte Carlo simulations
+N=1:50; %50 Monte Carlo simulations
 
 extract_parameters(fig,'calculate_R_0',false,'randomized',false);
 
 %Grid in GEO transformed to UTM
 xygrid=fig.UserData.xygrid;
 area_ellipse=arrayfun(@mean_area,1:length(xygrid));
-figure;
+f=figure;
 xgrid=fig.UserData.xgrid;
 num_grid=length(xgrid);
-imagesc(xgrid,fig.UserData.ygrid,pi*reshape(area_ellipse,num_grid,[]));
+area_ellipse=pi*area_ellipse;
+imagesc(xgrid,fig.UserData.ygrid,reshape(area_ellipse,num_grid,[]));
 axis xy; % flip ydirection
 fig.UserData.emitters_UTM=fig.UserData.emitters_UTM_last;
-
+colormap(f.CurrentAxes,'jet')
+colorbar(f.CurrentAxes)
+title('area of ellipses')
+xlabel('longitude')
+ylabel('latitude')
+toc
+figure;
+ecdf(area_ellipse);
+xlabel('area of 90% containment ellipse')
+ylabel('ECDF')
+title('ECDF of 90% containment ellipse')
     function area_est=mean_area(index)
         % calculate the area of ellipse total estimation
         % where emitter is assumed at xygrid(index,:)
