@@ -57,8 +57,9 @@ fig.UserData.velocity_error=extract_element(fig,'velocity_error');
 fig.UserData.frequency_error=extract_element(fig,'frequency_error');
 fig.UserData.coherent_time=extract_element(fig,'coherent_time');
 fig.UserData.beta_r=extract_element(fig,'beta_r');
-fig.UserData.WLS_batch=extract_element(fig,'WLS_batch');
+fig.UserData.WLS_batch=floor(extract_element(fig,'WLS_batch'));
 fig.UserData.UTM_grid=extract_element(fig,'UTM_grid');
+fig.UserData.num_epochs=extract_element(fig,'num_epochs');
 
 %%
 SNR=findobj(fig,'Tag','SNR');

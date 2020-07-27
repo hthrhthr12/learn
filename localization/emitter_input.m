@@ -110,9 +110,13 @@ set(fig,'WindowButtonDownFcn',@add_emitter);
         WLS_batch.String='1000 samples batch size';
         WLS_batch.UserData.default=1e3;
         %%
-        [UTM_grid,~]=add_ui(fig,position,'edit','UTM_grid');
+        [UTM_grid,position]=add_ui(fig,position,'edit','UTM_grid');
         UTM_grid.String='100 points in axis';
         UTM_grid.UserData.default=100;
+        %%
+        [num_epochs,~]=add_ui(fig,position,'edit','num_epochs');
+        num_epochs.String='1 epochs on data';
+        num_epochs.UserData.default=1;
         
         %%
         locations2utm(fig);

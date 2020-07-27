@@ -1,6 +1,5 @@
 function calculate_DDOP_TDOA(src,event)
 fig=src.Parent;
-create_UTM_grid(fig);
 
 if fig.UserData.num_platforms<3
     disp('cannot estimate by less than three platforms')
@@ -30,16 +29,21 @@ end
 
 %% calculate noise std with platform errors
 extract_parameters(fig);
+create_UTM_grid(fig);
 R_0=my_utm2ell(fig.UserData.R_0,'wgs84',36);
 plot(R_0(1),R_0(2),'kh','Tag','R0');
 [fig.UserData.DDOP_total_noise,fig.UserData.TDOA_total_noise]=noise_estimation(fig);
 
 %% TDOA DDOP estimation
-[R_hat_TDOA,P_hat_inv_TDOA]=TDOA_est(fig);
+[R_hat_TDOA,P_hat_inv_TDOA,solutions_TDOA]=TDOA_est(fig);
+solutions_TDOA=my_utm2ell(solutions_TDOA,'wgs84',36);
+plot(solutions_TDOA(:,1),solutions_TDOA(:,2),'b*');
 disp('TDOA')
 disp(P_hat_inv_TDOA)
 disp('DDOP')
-[R_hat_DDOP,P_hat_inv_DDOP]=DDOP_est(fig);
+[R_hat_DDOP,P_hat_inv_DDOP,solutions_DDOP]=DDOP_est(fig);
+solutions_DDOP=my_utm2ell(solutions_DDOP,'wgs84',36);
+plot(solutions_DDOP(:,1),solutions_DDOP(:,2),'c*');
 disp(P_hat_inv_DDOP)
 
 [G_sums_TDOA,h1]=plot_ellipse(fig,R_hat_TDOA,P_hat_inv_TDOA,'color','b','Tag','TDOA');

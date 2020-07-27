@@ -18,11 +18,6 @@ create_UTM_grid(fig);
 xygrid=fig.UserData.xygrid;
 arrayfun(@(index)DDOP_result(index),1:length(xygrid));
 fig.UserData.emitters_UTM=fig.UserData.emitters_UTM_last;
-% colormap(f.CurrentAxes,'jet')
-% colorbar(f.CurrentAxes)
-% title('area of ellipses')
-% xlabel('longitude')
-% ylabel('latitude')
 toc
     function DDOP_result(index)
         % calculate the result of ellipse DDOP estimation

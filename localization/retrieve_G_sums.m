@@ -4,6 +4,12 @@ G_sums=zeros(5,1);
 G_sums(1)=P_hat_inv(1,1);
 G_sums(2)=P_hat_inv(2,2);
 G_sums(3)=P_hat_inv(1,2);
+if size(R_hat,2)~=1
+    R_hat=R_hat.';
+end
+assert(all(size(R_hat)==[2,1]),'R_hat must be a vector')
+
+%%
 
 G_sums(4:5)=det(P_hat_inv)...
     *(([-G_sums(2),G_sums(3);G_sums(3),-G_sums(1)])\R_hat);
