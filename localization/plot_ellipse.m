@@ -4,6 +4,11 @@ p.addParameter('color','b');
 p.addParameter('Tag','result');
 p.parse(varargin{:});
 
+if size(R_hat,2)~=1
+    R_hat=R_hat.';
+end
+assert(all(size(R_hat)==[2,1]),'R_hat must be a vector')
+
 G_sums=retrieve_G_sums(R_hat,P_hat_inv);
 
 xy=G_sums_sample(fig,G_sums,R_hat,200);
