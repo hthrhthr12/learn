@@ -5,7 +5,10 @@ function [R_hat,P_hat_inv,solutions]=linear_est_WLS(fig,calulate_D_F,t...
 
 num_samples=fig.UserData.num_samples;
 num_epochs=fig.UserData.num_epochs;
-
+if fig.UserData.WLS_batch>num_samples
+    disp('WLS batch must be smaller than the number of samples')
+    return
+end
 batch_sizes=1:fig.UserData.WLS_batch:num_samples;
 if num_samples+1~=batch_sizes(end)
     % append num_samples to the end
@@ -17,8 +20,10 @@ t=t+...
     measurement_noise*randn(size(t));
 
 %% run for all epochs
-solutions=zeros(num_epochs*(length(batch_sizes)-1),2);
-count=1;
+solutions=zeros(num_epochs*(length(batch_sizes)-1)+1,2);
+solutions(1,:)=fig.UserData.R_0;
+
+count=2;
 for epoch=1:num_epochs
     for batch=1:length(batch_sizes)-1
         batch_indices=batch_sizes(batch):(batch_sizes(batch+1)-1);
@@ -39,5 +44,7 @@ for epoch=1:num_epochs
         count=count+1;
     end
 end
+% restore R_0:
+fig.UserData.R_0=solutions(1,:);
 R_hat=solutions(end,:);
 end

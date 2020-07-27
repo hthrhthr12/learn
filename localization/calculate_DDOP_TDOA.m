@@ -37,21 +37,15 @@ plot(R_0(1),R_0(2),'kh','Tag','R0');
 %% TDOA DDOP estimation
 [R_hat_TDOA,P_hat_inv_TDOA,solutions_TDOA]=TDOA_est(fig);
 solutions_TDOA=my_utm2ell(solutions_TDOA,'wgs84',36);
-plot(solutions_TDOA(:,1),solutions_TDOA(:,2),'b*');
-disp('TDOA')
-disp(P_hat_inv_TDOA)
-disp('DDOP')
+plot(solutions_TDOA(:,1),solutions_TDOA(:,2),'b*','Tag','TDOA');
 [R_hat_DDOP,P_hat_inv_DDOP,solutions_DDOP]=DDOP_est(fig);
 solutions_DDOP=my_utm2ell(solutions_DDOP,'wgs84',36);
-plot(solutions_DDOP(:,1),solutions_DDOP(:,2),'c*');
-disp(P_hat_inv_DDOP)
+plot(solutions_DDOP(:,1),solutions_DDOP(:,2),'c*','Tag','DDOP');
 
 [G_sums_TDOA,h1]=plot_ellipse(fig,R_hat_TDOA,P_hat_inv_TDOA,'color','b','Tag','TDOA');
 [G_sums_DDOP,h2]=plot_ellipse(fig,R_hat_DDOP,P_hat_inv_DDOP,'color','c','Tag','DDOP');
 % the scales are very different
 [R_hat,P_hat_inv]=G_sums2est(G_sums_TDOA+G_sums_DDOP);
-disp('combined')
-disp(P_hat_inv)
 [~,h3]=plot_ellipse(fig,R_hat,P_hat_inv,'color','g','Tag','TDOA_DDOP');
 fig.UserData.help_text.String='paths start large and decreases';
 lgd=legend([h1,h2,h3]);
